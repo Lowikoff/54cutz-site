@@ -44,6 +44,7 @@ Ou double-clic sur `index.html`.
 - [ ] **Carte** — pré-réglée "Chau. de Charleroi 45, 1360 Perwez". Vérifier le pin.
 - [ ] **Photos galerie** — sélection actuelle modifiable (13 dispo dans `assets/images/`).
 - [ ] Retirer la mention "proposition de refonte" du footer une fois validé.
+- [ ] **Domaine SEO** — `sitemap.xml`, `robots.txt`, `<link canonical>` et `og:url`/`og:image` pointent sur `https://54cutz.com/`. Adapter si autre domaine (ex. GitHub Pages).
 
 ## Tarifs intégrés (selon Salonkee)
 | Prestation | Ismaël & Wyatt | Raphaël | Bastien |

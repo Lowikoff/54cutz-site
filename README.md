@@ -43,7 +43,15 @@ Ou double-clic sur `index.html`.
 - [ ] **Handles réseaux** — vérifier `@54cutz_` (Insta/TikTok), `@w9cutzz` (Wyatt), `@menjoucutz` (Raphaël), `@sneizycutz` (Bastien).
 - [ ] **Carte** — pré-réglée "Chau. de Charleroi 45, 1360 Perwez". Vérifier le pin.
 - [ ] **Photos galerie** — sélection actuelle modifiable (13 dispo dans `assets/images/`).
-- [ ] Retirer la mention "proposition de refonte" du footer une fois validé.
+- [x] Footer : mention "proposition de refonte" remplacée par les liens légaux. ✔
+
+## Pages légales (Belgique)
+- `mentions-legales.html` — éditeur, BCE/TVA, hébergeur, propriété intellectuelle, droit belge (Livre XII Code de droit économique).
+- `politique-confidentialite.html` — RGPD : données, finalités, bases légales, sous-traitants (Salonkee/GitHub/Google), cookies, conservation, droits, réclamation APD.
+- Liées dans le footer du site + entre elles. En `noindex` (volontairement hors sitemap).
+- ⚠️ **Modèles** rédigés selon le droit belge/RGPD à partir des infos connues — à faire relire par un professionnel avant usage définitif.
+- [ ] Vérifier le **nom légal exact** et la forme juridique (personne physique / société) auprès de la BCE.
+- [ ] Adapter l'**hébergeur** dans les mentions légales si différent de GitHub Pages.
 
 ## SEO (domaine cible : 54cutz.be)
 - **Données structurées** JSON-LD `HairSalon` : NAP, géo, horaires, 5 prestations + prix, 4 barbers, réseaux (`sameAs`), action de réservation Salonkee.

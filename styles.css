@@ -41,7 +41,14 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  background: var(--black);
+  /* coupe le rebond élastique (rubber-band) qui révélait une bande noire
+     en haut sur Mac/iOS quand on tire au-delà du sommet de la page */
+  overscroll-behavior: none;
+}
 
 body {
   background: var(--black);
@@ -50,6 +57,7 @@ body {
   font-weight: 400;
   line-height: 1.6;
   overflow-x: hidden;
+  overscroll-behavior: none;
   cursor: none;
 }
 

@@ -11,6 +11,19 @@ python3 -m http.server 8000
 ```
 Ou double-clic sur `index.html`.
 
+## Mettre en ligne (GitHub Pages)
+1. GitHub → repo **54cutz-site** → **Settings** → **Pages**.
+2. *Build and deployment* → *Source* : **Deploy from a branch**.
+3. *Branch* : **main** / dossier **/ (root)** → **Save**.
+4. Attendre ~1 min. URL publique : **https://lowikoff.github.io/54cutz-site/**
+
+### Plus tard : domaine 54cutz.be
+- Recréer un fichier `CNAME` à la racine contenant `54cutz.be`.
+- Chez le registrar du domaine, ajouter les DNS GitHub Pages :
+  - 4 enregistrements **A** vers `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`
+  - (ou un **CNAME** `www` → `lowikoff.github.io`)
+- Settings → Pages → *Custom domain* : `54cutz.be` → cocher *Enforce HTTPS*.
+
 ## Identité visuelle
 - **Palette dérivée du logo + de l'enseigne néon** du salon : base noir/blanc monochrome
   (logo brushstroke blanc) + accent dégradé néon **magenta → bleu** (échantillonné sur

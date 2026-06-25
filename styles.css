@@ -44,9 +44,11 @@
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
-  background: var(--black);
   /* coupe le rebond élastique (rubber-band) qui révélait une bande noire
-     en haut sur Mac/iOS quand on tire au-delà du sommet de la page */
+     en haut sur Mac/iOS quand on tire au-delà du sommet de la page.
+     PAS de background ici : sinon html devient le canvas et masque le
+     hero (.hero__bg est en z-index:-1, il doit rester au-dessus du fond
+     du body, pas derrière celui de html). */
   overscroll-behavior: none;
 }
 

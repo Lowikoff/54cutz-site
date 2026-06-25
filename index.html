@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>54CUTZ — Barbershop à Perwez | Ismaël & Wyatt</title>
+  <meta name="description" content="Salon 54cutz — barbershop moderne à Perwez. Coupe, barbe, transformation et service V.I.P par Ismaël & Wyatt. Réservez en ligne." />
+  <meta name="theme-color" content="#0a0908" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="54CUTZ — Barbershop à Perwez" />
+  <meta property="og:description" content="Jeunes barbers passionnés, sens du détail. Coupe · Barbe · V.I.P." />
+  <meta property="og:locale" content="fr_BE" />
+  <meta property="og:image" content="assets/images/gallery14.jpg" />
+
+  <link rel="icon" href="assets/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/favicon/icon-192.png" />
+  <link rel="apple-touch-icon" href="assets/favicon/icon-192.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ===== LOADER ===== -->
+  <div class="loader" id="loader" aria-hidden="true">
+    <img class="loader__logo" src="assets/logo.png" alt="54cutz" />
+    <div class="loader__bar"><span></span></div>
+  </div>
+
+  <!-- ===== CUSTOM CURSOR ===== -->
+  <div class="cursor" id="cursor" aria-hidden="true"></div>
+  <div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+
+  <!-- ===== NAV ===== -->
+  <header class="nav" id="nav">
+    <a href="#hero" class="nav__logo" data-cursor aria-label="54cutz — accueil">
+      <img class="nav__logo-img" src="assets/logo.png" alt="54cutz" />
+    </a>
+    <nav class="nav__links" id="navLinks">
+      <a href="#services" data-cursor>Services</a>
+      <a href="#team" data-cursor>L'équipe</a>
+      <a href="#gallery" data-cursor>Galerie</a>
+      <a href="#infos" data-cursor>Infos</a>
+      <a href="#book" class="nav__cta" data-cursor>Réserver</a>
+    </nav>
+    <button class="nav__burger" id="burger" aria-label="Menu" aria-expanded="false">
+      <span></span><span></span>
+    </button>
+  </header>
+
+  <main>
+    <!-- ===== HERO ===== -->
+    <section class="hero" id="hero">
+      <div class="hero__bg" data-parallax="0.2">
+        <div class="hero__bg-img"></div>
+        <div class="hero__bg-overlay"></div>
+      </div>
+
+      <div class="hero__content">
+        <p class="hero__eyebrow reveal">Barbershop · Perwez</p>
+        <h1 class="hero__title">
+          <span class="line"><span>BARBER</span></span>
+          <span class="line line--accent"><span>shop</span></span>
+        </h1>
+        <p class="hero__sub reveal">
+          Nous sommes <strong>Ismaël</strong> &amp; <strong>Wyatt</strong>,
+          de jeunes barbers passionnés ayant le sens du détail.
+        </p>
+        <div class="hero__actions reveal">
+          <a href="#book" class="btn btn--gold" data-cursor>Réserver maintenant</a>
+          <a href="#services" class="btn btn--ghost" data-cursor>Voir les services</a>
+        </div>
+      </div>
+
+      <div class="hero__scroll reveal">
+        <span>Scroll</span>
+        <div class="hero__scroll-line"><i></i></div>
+      </div>
+    </section>
+
+    <!-- ===== MARQUEE ===== -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee__track">
+        <span>Coupe</span><i>✶</i><span>Barbe</span><i>✶</i><span>Transformation</span><i>✶</i><span>Service V.I.P</span><i>✶</i>
+        <span>Coupe</span><i>✶</i><span>Barbe</span><i>✶</i><span>Transformation</span><i>✶</i><span>Service V.I.P</span><i>✶</i>
+      </div>
+    </div>
+
+    <!-- ===== INTRO / STATEMENT ===== -->
+    <section class="statement" id="about">
+      <p class="statement__text reveal-words">
+        Le détail fait la différence. Chaque coupe est pensée pour vous —
+        précision, style et une expérience qui vous ressemble.
+      </p>
+    </section>
+
+    <!-- ===== SERVICES ===== -->
+    <section class="services" id="services">
+      <div class="section-head">
+        <span class="section-head__index">01</span>
+        <h2 class="section-head__title reveal">Nos services</h2>
+        <p class="section-head__lead reveal">Du classique au sur-mesure.</p>
+      </div>
+
+      <ul class="services__list">
+        <li class="service" data-reveal>
+          <div class="service__num">01</div>
+          <h3 class="service__name">Coupe</h3>
+          <p class="service__desc">Coupe nette et précise, finitions soignées au rasoir.</p>
+          <span class="service__price" data-price>dès 20 €</span>
+        </li>
+        <li class="service" data-reveal>
+          <div class="service__num">02</div>
+          <h3 class="service__name">Barbe</h3>
+          <p class="service__desc">Taille, contours et soin pour une barbe parfaitement dessinée.</p>
+          <span class="service__price" data-price>dès 15 €</span>
+        </li>
+        <li class="service" data-reveal>
+          <div class="service__num">03</div>
+          <h3 class="service__name">Coupe + Barbe</h3>
+          <p class="service__desc">Le combo complet pour un look impeccable de la tête au menton.</p>
+          <span class="service__price" data-price>dès 30 €</span>
+        </li>
+        <li class="service" data-reveal>
+          <div class="service__num">04</div>
+          <h3 class="service__name">Transformation</h3>
+          <p class="service__desc">Changement de style en profondeur, conseil et exécution.</p>
+          <span class="service__price" data-price>40 €</span>
+        </li>
+        <li class="service service--vip" data-reveal>
+          <div class="service__num">05</div>
+          <div class="service__tag">Premium</div>
+          <h3 class="service__name">Service V.I.P</h3>
+          <p class="service__desc">Shampoing, consultation approfondie, coupe supérieure &amp; serviette chaude.</p>
+          <span class="service__price" data-price>60 €</span>
+        </li>
+      </ul>
+      <div class="pricing" data-reveal>
+        <h3 class="pricing__title">Tarifs par barber</h3>
+        <div class="pricing__scroll">
+          <table class="pricing__table">
+            <thead>
+              <tr>
+                <th>Prestation</th>
+                <th>Ismaël &amp; Wyatt</th>
+                <th>Raphaël <i>@menjoucutz</i></th>
+                <th>Bastien <i>@sneizycutz</i></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Coupe</td><td>30 €</td><td>25 €</td><td>20 €</td></tr>
+              <tr><td>Barbe</td><td>20 €</td><td>15 €</td><td class="na">—</td></tr>
+              <tr><td>Coupe + Barbe</td><td>40 €</td><td>35 €</td><td>30 €</td></tr>
+              <tr><td>Transformation</td><td>40 €</td><td class="na">—</td><td class="na">—</td></tr>
+              <tr><td>Service V.I.P</td><td>60 €</td><td class="na">—</td><td class="na">—</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="services__note">Réservation en ligne via Salonkee · tarif selon la prestation et le barber.</p>
+      </div>
+    </section>
+
+    <!-- ===== STATS ===== -->
+    <section class="stats">
+      <div class="stat" data-reveal>
+        <span class="stat__num" data-count="3">0</span>
+        <span class="stat__plus">+</span>
+        <span class="stat__label">ans d'expérience</span>
+      </div>
+      <div class="stat" data-reveal>
+        <span class="stat__num" data-count="5">0</span>
+        <span class="stat__label">services</span>
+      </div>
+      <div class="stat" data-reveal>
+        <span class="stat__num" data-count="4">0</span>
+        <span class="stat__label">barbers passionnés</span>
+      </div>
+      <div class="stat" data-reveal>
+        <span class="stat__num" data-count="100">0</span>
+        <span class="stat__plus">%</span>
+        <span class="stat__label">sens du détail</span>
+      </div>
+    </section>
+
+    <!-- ===== TEAM ===== -->
+    <section class="team" id="team">
+      <div class="section-head">
+        <span class="section-head__index">02</span>
+        <h2 class="section-head__title reveal">L'équipe</h2>
+        <p class="section-head__lead reveal">Quatre barbers, une même passion.</p>
+      </div>
+
+      <div class="team__grid">
+        <article class="member" data-reveal>
+          <div class="member__photo member__photo--ismael" data-parallax="0.12"></div>
+          <div class="member__body">
+            <h3 class="member__name">Ismaël</h3>
+            <span class="member__handle">@54cutz</span>
+            <p class="member__bio">
+              « Cela fait maintenant trois ans que je pratique en tant que barber. »
+              Précision et passion à chaque coupe.
+            </p>
+          </div>
+        </article>
+
+        <article class="member" data-reveal>
+          <div class="member__photo member__photo--wyatt" data-parallax="0.12"></div>
+          <div class="member__body">
+            <h3 class="member__name">Wyatt</h3>
+            <span class="member__handle">@w9cutzz</span>
+            <p class="member__bio">
+              « Passionné par la coiffure depuis plus d'un an, j'ai 18 ans. »
+              L'énergie d'une nouvelle génération de barbers.
+            </p>
+          </div>
+        </article>
+
+        <article class="member member--ph" data-reveal>
+          <div class="member__photo member__photo--ph">
+            <span class="member__initial">R</span>
+          </div>
+          <div class="member__body">
+            <h3 class="member__name">Raphaël</h3>
+            <span class="member__handle">@menjoucutz</span>
+            <p class="member__bio">Coupe &amp; barbe sur-mesure, le geste précis.</p>
+          </div>
+        </article>
+
+        <article class="member member--ph" data-reveal>
+          <div class="member__photo member__photo--ph">
+            <span class="member__initial">B</span>
+          </div>
+          <div class="member__body">
+            <h3 class="member__name">Bastien</h3>
+            <span class="member__handle">@sneizycutz</span>
+            <p class="member__bio">Style net, finitions soignées à chaque passage.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===== GALLERY ===== -->
+    <section class="gallery" id="gallery">
+      <div class="section-head">
+        <span class="section-head__index">03</span>
+        <h2 class="section-head__title reveal">Galerie</h2>
+        <p class="section-head__lead reveal">Le travail parle de lui-même.</p>
+      </div>
+
+      <div class="gallery__grid">
+        <figure class="gallery__item gallery__item--1" data-reveal data-parallax="0.08"></figure>
+        <figure class="gallery__item gallery__item--2" data-reveal data-parallax="0.14"></figure>
+        <figure class="gallery__item gallery__item--3" data-reveal data-parallax="0.1"></figure>
+        <figure class="gallery__item gallery__item--4" data-reveal data-parallax="0.16"></figure>
+        <figure class="gallery__item gallery__item--5" data-reveal data-parallax="0.06"></figure>
+      </div>
+      <p class="gallery__note reveal">Vos photos de coupes prendront place ici.</p>
+    </section>
+
+    <!-- ===== INFOS : HOURS + MAP ===== -->
+    <section class="infos" id="infos">
+      <div class="section-head">
+        <span class="section-head__index">04</span>
+        <h2 class="section-head__title reveal">Horaires &amp; accès</h2>
+      </div>
+
+      <div class="infos__grid">
+        <div class="hours" data-reveal>
+          <h3 class="hours__title">Horaires</h3>
+          <ul class="hours__list">
+            <li><span>Lundi</span><b class="closed">Fermé</b></li>
+            <li><span>Mardi</span><b>10h — 20h</b></li>
+            <li><span>Mercredi</span><b>10h — 20h</b></li>
+            <li><span>Jeudi</span><b>10h — 20h</b></li>
+            <li><span>Vendredi</span><b>10h — 20h</b></li>
+            <li><span>Samedi</span><b>10h — 15h</b></li>
+            <li><span>Dimanche</span><b>10h — 15h</b></li>
+          </ul>
+
+          <div class="address">
+            <h3 class="hours__title">Adresse</h3>
+            <p>Chau. de Charleroi 45<br />1360 Perwez</p>
+            <a class="link-underline" data-cursor target="_blank" rel="noopener"
+               href="https://maps.google.com/?q=Chau.+de+Charleroi+45,+1360+Perwez">
+              Itinéraire →
+            </a>
+          </div>
+        </div>
+
+        <div class="map" data-reveal>
+          <iframe
+            title="Plan — 54cutz Perwez"
+            src="https://maps.google.com/maps?q=Chau.%20de%20Charleroi%2045%2C%201360%20Perwez&t=&z=15&ie=UTF8&iwloc=&output=embed"
+            loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== BOOKING CTA ===== -->
+    <section class="book" id="book">
+      <div class="book__inner">
+        <p class="book__eyebrow reveal">Prêt pour votre prochaine coupe ?</p>
+        <h2 class="book__title">
+          <span class="line"><span>RÉSERVEZ</span></span>
+          <span class="line line--accent"><span>votre rendez-vous</span></span>
+        </h2>
+        <a href="https://salonkee.be/salon/54-cutz?lang=fr" target="_blank" rel="noopener"
+           class="btn btn--gold btn--lg" data-cursor>Réserver via Salonkee</a>
+        <p class="book__policy reveal">
+          Annulation : 50% des frais si &lt; 24h · 100% si &lt; 12h ou absence.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="#hero" class="footer__logo" aria-label="54cutz"><img class="footer__logo-img" src="assets/logo.png" alt="54cutz" /></a>
+        <p>Barbershop à Perwez.<br />Sens du détail, depuis le premier coup de tondeuse.</p>
+      </div>
+
+      <div class="footer__col">
+        <h4>Contact</h4>
+        <a class="link-underline" data-cursor href="mailto:54cutz@gmail.com">54cutz@gmail.com</a>
+        <p>Chau. de Charleroi 45<br />1360 Perwez</p>
+      </div>
+
+      <div class="footer__col">
+        <h4>Suivez-nous</h4>
+        <a class="link-underline" data-cursor href="https://instagram.com/54cutz_" target="_blank" rel="noopener">Instagram @54cutz_</a>
+        <a class="link-underline" data-cursor href="https://tiktok.com/@54cutz_" target="_blank" rel="noopener">TikTok @54cutz_</a>
+      </div>
+
+      <div class="footer__col">
+        <h4>Réserver</h4>
+        <a class="link-underline" data-cursor href="https://salonkee.be/salon/54-cutz?lang=fr" target="_blank" rel="noopener">Salonkee →</a>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <span>© <span id="year"></span> Salon 54cutz · TVA BE0803.277.289</span>
+      <span>Site refait avec ❤ — proposition de refonte</span>
+    </div>
+  </footer>
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

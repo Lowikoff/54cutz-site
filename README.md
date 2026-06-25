@@ -44,7 +44,19 @@ Ou double-clic sur `index.html`.
 - [ ] **Carte** — pré-réglée "Chau. de Charleroi 45, 1360 Perwez". Vérifier le pin.
 - [ ] **Photos galerie** — sélection actuelle modifiable (13 dispo dans `assets/images/`).
 - [ ] Retirer la mention "proposition de refonte" du footer une fois validé.
-- [ ] **Domaine SEO** — `sitemap.xml`, `robots.txt`, `<link canonical>` et `og:url`/`og:image` pointent sur `https://54cutz.com/`. Adapter si autre domaine (ex. GitHub Pages).
+
+## SEO (domaine cible : 54cutz.be)
+- **Données structurées** JSON-LD `HairSalon` : NAP, géo, horaires, 5 prestations + prix, 4 barbers, réseaux (`sameAs`), action de réservation Salonkee.
+- **Méta** : title/description orientés local ("barbier Perwez"), balises `geo.*`/`ICBM`, Open Graph + Twitter Card, `canonical` → `https://54cutz.be/`.
+- `sitemap.xml` (avec image) + `robots.txt` + `CNAME` (`54cutz.be`) pour GitHub Pages.
+- NAP cohérent partout : **Salon 54cutz · Chaussée de Charleroi 45, 1360 Perwez · 54cutz@gmail.com**.
+- Pas de note/avis dans le schema (Google pénalise les `aggregateRating` non vérifiables on-page) ni de téléphone (le salon ne répond pas aux appels → contact via réseaux/Salonkee).
+
+### À faire côté Google (hors code)
+- [ ] Pointer le domaine **54cutz.be** vers l'hébergement + activer HTTPS.
+- [ ] Mettre l'URL `https://54cutz.be` sur la fiche **Google Business Profile** et les réseaux.
+- [ ] Soumettre `https://54cutz.be/sitemap.xml` dans **Google Search Console**.
+- [ ] Vérifier le rendu avec le test des résultats enrichis Google (Rich Results Test).
 
 ## Tarifs intégrés (selon Salonkee)
 | Prestation | Ismaël & Wyatt | Raphaël | Bastien |

@@ -510,7 +510,7 @@ ul { list-style: none; }
 .hours__list span { color: var(--cream-d); }
 .hours__list b { font-weight: 600; font-variant-numeric: tabular-nums; }
 .hours__list .closed { color: #7a7066; font-weight: 400; }
-.address p { color: var(--cream-d); margin: .6rem 0 1rem; }
+.address address { color: var(--cream-d); margin: .6rem 0 1rem; font-style: normal; line-height: 1.7; }
 .map { aspect-ratio: 4/3; border-radius: 6px; overflow: hidden; border: 1px solid var(--line); }
 .map iframe { width: 100%; height: 100%; border: 0; filter: grayscale(0.6) invert(0.92) contrast(0.85); }
 
@@ -561,7 +561,7 @@ ul { list-style: none; }
   font-size: .78rem; letter-spacing: .18em; text-transform: uppercase;
   color: var(--gold); margin-bottom: 1.2rem; font-weight: 600;
 }
-.footer__col a, .footer__col p { display: block; color: var(--cream-d); font-size: .92rem; margin-bottom: .7rem; }
+.footer__col a, .footer__col p, .footer__col address { display: block; color: var(--cream-d); font-size: .92rem; margin-bottom: .7rem; font-style: normal; line-height: 1.6; }
 .footer__bottom {
   display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
   padding-top: 1.8rem; color: #6f655b; font-size: .78rem;

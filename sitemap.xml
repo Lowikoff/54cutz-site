@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
-    <loc>https://54cutz.com/</loc>
+    <loc>https://54cutz.be/</loc>
     <lastmod>2026-06-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://54cutz.be/assets/images/gallery14.jpg</image:loc>
+      <image:title>Salon 54cutz — barbershop à Perwez</image:title>
+    </image:image>
   </url>
 </urlset>

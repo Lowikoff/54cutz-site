@@ -114,10 +114,18 @@
     gsap.registerPlugin(ScrollTrigger);
     document.querySelectorAll("[data-parallax]").forEach((el) => {
       const speed = parseFloat(el.dataset.parallax) || 0.15;
+      // Hero bg sits at the top of the page: anchor it at "top top" so there is
+      // NO downward shift (and no black strip) when the page is at scroll 0.
+      const isHero = el.classList.contains("hero__bg");
       gsap.to(el, {
         yPercent: speed * 100,
         ease: "none",
-        scrollTrigger: { trigger: el, start: "top bottom", end: "bottom top", scrub: true }
+        scrollTrigger: {
+          trigger: isHero ? ".hero" : el,
+          start: isHero ? "top top" : "top bottom",
+          end: "bottom top",
+          scrub: true
+        }
       });
     });
   }

@@ -413,10 +413,15 @@ ul { list-style: none; }
   color: var(--cream); border-bottom: 1px solid rgba(255,45,143,0.4);
   padding-bottom: 1.1rem;
 }
-.pricing__table thead th i {
-  display: block; font-style: normal; font-weight: 400;
+.pricing__table thead th .th-handles {
+  display: block; font-weight: 400;
   font-size: .68rem; letter-spacing: .06em; color: var(--magenta); margin-top: .25rem;
 }
+.pricing__table thead th a {
+  color: var(--magenta); border-bottom: 1px solid transparent;
+  transition: color .25s var(--ease), border-color .25s var(--ease);
+}
+.pricing__table thead th a:hover { color: var(--magenta-glow); border-color: var(--magenta-glow); }
 .pricing__table tbody td:first-child, .pricing__table thead th:first-child {
   text-align: left; font-weight: 600; color: var(--cream);
 }

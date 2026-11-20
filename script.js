@@ -49,11 +49,22 @@
     document.body.style.overflow = open ? "hidden" : "";
   });
   navLinks.addEventListener("click", (e) => {
-    if (e.target.tagName === "A") {
-      nav.classList.remove("is-open");
-      burger.setAttribute("aria-expanded", "false");
+    const link = e.target.closest("a");
+    if (!link) return;
+    // menu mobile ouvert : on place la page sur la section instantanément,
+    // derrière le menu encore opaque, puis le menu s'efface en douceur
+    const href = link.getAttribute("href") || "";
+    const target = href.startsWith("#") ? document.querySelector(href) : null;
+    if (target && nav.classList.contains("is-open")) {
+      e.preventDefault();
       document.body.style.overflow = "";
+      const top = target.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({ top, behavior: "instant" });
+      history.pushState(null, "", href);
     }
+    nav.classList.remove("is-open");
+    burger.setAttribute("aria-expanded", "false");
+    document.body.style.overflow = "";
   });
 
   /* ---------- reveal on scroll (IntersectionObserver) ---------- */

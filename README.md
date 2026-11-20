@@ -82,9 +82,9 @@ Ou double-clic sur `index.html`.
 ## Tarifs intégrés (selon Salonkee)
 | Prestation | Ismaël & Wyatt | Raphaël | Bastien |
 |---|---|---|---|
-| Coupe | 30 € | 25 € | 20 € |
+| Coupe | 30 € | 25 € | 25 € |
 | Barbe | 20 € | 15 € | — |
-| Coupe + Barbe | 40 € | 35 € | 30 € |
+| Coupe + Barbe | 40 € | 35 € | 35 € |
 | Transformation | 40 € | — | — |
 | Service V.I.P | 60 € | — | — |
 

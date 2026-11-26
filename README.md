@@ -155,3 +155,9 @@ horaires, adresse, email, conditions d'annulation, TVA, bios Ismaël & Wyatt.
 - [ ] Moyens de paiement acceptés (espèces, carte, Bancontact, paiement mobile ?) : info absente de Salonkee et de 54cutz.com, donc pas dans la FAQ ni le JSON-LD. Le parking devant la vitrine est confirmé (Salonkee + 54cutz.com) et figure dans la FAQ.
 - [ ] Texte SEO : « Perwez se trouve entre Gembloux, Jodoigne et Eghezée » — le client est-il d'accord pour citer ces communes ?
 - [ ] Domaine 54cutz.be : qui l'achète, à quel nom. Et 54cutz.com (agence Pixl) : qui détient le domaine ?
+
+## Parallaxe en CSS (26/11/2026, 13h20)
+- Le parallaxe JS (GSAP scrub) saccadait sur un vrai iPhone (retard pendant l'élan du défilement de Safari). Remplacé par un parallaxe 100 % CSS (scroll-driven animations : `view-timeline` sur `.hero` et `.member__photo`), mêmes amplitudes et mêmes couches. GSAP ne sert plus qu'au texte du statement.
+- `.member` et `.member__photo` passent en `overflow: clip` (avec `hidden` en secours) : `hidden` en faisait des conteneurs de défilement et bloquait l'animation.
+- Navigateurs sans support : images fixes, aucun bug. `prefers-reduced-motion` : pas de parallaxe.
+- Testé avec `npx wrangler dev`, Chromium + WebKit, 375 et 1280 px : 35 arrêts, rien ne bouge après l'arrêt, photos qui suivent le scroll, aucun bord vide (marge min 10 px), hero qui descend avec le scroll, survol souris OK, rien de collé au tap. Publié le 26/11/2026. **À valider sur un vrai iPhone.**

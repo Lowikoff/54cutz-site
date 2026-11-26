@@ -529,7 +529,9 @@ ul { list-style: none; }
   gap: clamp(1.5rem, 4vw, 3.5rem); padding: 0 var(--pad);
 }
 .member {
-  position: relative; overflow: hidden; border-radius: 4px;
+  /* overflow: clip (et non hidden) : hidden en ferait un conteneur de défilement,
+     et le parallaxe CSS de la photo ne suivrait plus le scroll de la page */
+  position: relative; overflow: hidden; overflow: clip; border-radius: 4px;
   background: var(--char);
 }
 /* Photo en trois couches :
@@ -539,7 +541,7 @@ ul { list-style: none; }
                         transition CSS sur son transform.
    L'image dépasse de 12 % en haut et en bas ; ±8 % de 124 % = ±9,92 %
    du cadre < 12 % : il reste toujours ≥ 2 % de marge, aucun bord vide. */
-.member__photo { position: relative; aspect-ratio: 4/5; overflow: hidden; }
+.member__photo { position: relative; aspect-ratio: 4/5; overflow: hidden; overflow: clip; }
 .member__photo-zoom { position: absolute; inset: 0; transform: scale(1.08); }
 .member__photo-img {
   position: absolute; left: 0; top: -12%; width: 100%; height: 124%;
@@ -952,3 +954,31 @@ body.legal-page { cursor: auto; }
   .footer { padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px)); }
 }
 @media (prefers-reduced-motion: reduce) { .book-fab { transition: opacity .2s ease; } }
+
+/* ============================================================
+   PARALLAXE — 100 % CSS (scroll-driven animations)
+   Animé par le navigateur au rythme du défilement : aucun retard sur
+   iPhone. Mêmes couches et mêmes amplitudes qu'avant (marges calculées
+   plus haut : aucun bord vide). Navigateurs sans support : images fixes.
+   La timeline est posée sur le CADRE (.hero, .member__photo) et non sur
+   l'image : le cadre est en overflow hidden, view() sur l'image le
+   prendrait pour le conteneur de défilement.
+   ============================================================ */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .hero { view-timeline: --hero block; }
+    .hero__bg {
+      animation: px-hero linear both;
+      animation-timeline: --hero;
+      animation-range: exit 0% exit 100%;   /* = haut du hero en haut de l'écran → bas du hero en haut */
+    }
+    .member__photo { view-timeline: --photo block; }
+    .member__photo-img {
+      animation: px-photo linear both;
+      animation-timeline: --photo;
+      animation-range: cover 0% cover 100%; /* = entre par le bas → sort par le haut */
+    }
+  }
+}
+@keyframes px-hero  { from { transform: translate3d(0, 0, 0); }   to { transform: translate3d(0, 15%, 0); } }
+@keyframes px-photo { from { transform: translate3d(0, -8%, 0); } to { transform: translate3d(0, 8%, 0); } }

@@ -141,32 +141,10 @@
     counters.forEach((c) => cio.observe(c));
   }
 
-  /* ---------- parallax (GSAP ScrollTrigger) ---------- */
-  // Souris ET tactile. Chaque couche animée est plus haute que son cadre
-  // et ne se déplace que dans sa marge (calcul dans styles.css) : aucun bord
-  // ne se découvre. scrub: true = la photo suit le doigt en direct, et
-  // s'arrête avec lui (aucune transition CSS sur ces transforms).
-  // ignoreMobileResize : pas de recalcul quand la barre d'adresse de
-  // Safari se replie (le hero est en 100svh, sa hauteur ne change pas).
-  if (hasGSAP && window.ScrollTrigger) {
-    gsap.registerPlugin(ScrollTrigger);
-    ScrollTrigger.config({ ignoreMobileResize: true });
-  }
-  if (hasGSAP && window.ScrollTrigger && !reduce) {
-    const heroBg = document.querySelector(".hero__bg");
-    if (heroBg) {
-      gsap.fromTo(heroBg, { yPercent: 0 }, {
-        yPercent: 15, ease: "none", force3D: true,
-        scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true }
-      });
-    }
-    document.querySelectorAll(".member__photo-img").forEach((img) => {
-      gsap.fromTo(img, { yPercent: -8 }, {
-        yPercent: 8, ease: "none", force3D: true,
-        scrollTrigger: { trigger: img.closest(".member__photo"), start: "top bottom", end: "bottom top", scrub: true }
-      });
-    });
-  }
+  /* ---------- parallax ----------
+     Fait en CSS (scroll-driven animations, voir styles.css) : animé par le
+     navigateur en même temps que le défilement, donc fluide sur iPhone,
+     contrairement à un parallaxe JS qui a du retard pendant l'élan de Safari. */
 
   /* ---------- custom cursor ---------- */
   const cursor = document.getElementById("cursor");

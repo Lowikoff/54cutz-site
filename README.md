@@ -52,6 +52,7 @@ Sert le site comme Cloudflare (adresses sans .html, redirections 301, page 404).
 - [ ] **Carte** — pré-réglée "Chau. de Charleroi 45, 1360 Perwez". Vérifier le pin.
 - [ ] **Photos galerie** — sélection actuelle modifiable (13 dispo dans `assets/images/`).
 - [x] Footer : mention "proposition de refonte" remplacée par les liens légaux. ✔
+- [ ] **Brancher Cloudflare** : le Worker `54cutz-site` n'existe pas encore sur le compte Cloudflare (vérifié le 26/11/2026). Créer le Worker en le reliant au dépôt `Lowikoff/54cutz-site` (Workers Builds), puis ajouter les domaines 54cutz.be et www. En attendant, le push publie seulement la copie GitHub Pages, où les liens `/mentions-legales` du pied de page mènent à une 404 (le site y est servi sous `/54cutz-site/`).
 - [ ] **Après la publication** : vérifier sur l'adresse Cloudflare que `/README.md`, `/CLAUDE.md` et `/wrangler.jsonc` renvoient 404, et que `/mentions-legales.html` redirige en 301.
 - [ ] **Sur un vrai téléphone** (iPhone Safari) : bouton Réserver flottant et menu (testé seulement en simulation).
 

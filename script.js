@@ -58,24 +58,116 @@
     burger.setAttribute("aria-expanded", String(open));
     document.body.style.overflow = open ? "hidden" : "";
   });
+  /* ---------- liens vers une section de la page ----------
+     Défilement en JS plutôt que scroll-behavior: smooth (Safari le fait
+     très vite, sans réglage, et ignore le header fixe) :
+     - requestAnimationFrame + easeInOutCubic, durée selon la distance
+       (600 à 1000 ms) ;
+     - arrivée sous le header (hauteur du header en mode « scrolled »,
+       celle qu'il aura à l'arrivée) : le titre n'est jamais caché ;
+     - URL mise à jour avec history.pushState, sans saut ;
+     - un toucher, la molette, un clic ou une touche pendant l'animation
+       l'arrête aussitôt : l'utilisateur reprend la main ;
+     - prefers-reduced-motion : saut direct. */
+  const remPx = () => parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+  // hauteur du header une fois la page défilée (padding 1rem haut et bas)
+  const headerH = () => {
+    const cs = getComputedStyle(nav);
+    return nav.offsetHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) + 2 * remPx();
+  };
+  const anchorTarget = (href) => {
+    if (!href || href.length < 2 || href[0] !== "#") return null;
+    try { return document.getElementById(decodeURIComponent(href.slice(1))); } catch (_) { return null; }
+  };
+  const targetY = (el) => {
+    if (el.id === "hero") return 0;
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    const y = el.getBoundingClientRect().top + window.scrollY - headerH();
+    return Math.max(0, Math.min(max, Math.round(y)));
+  };
+  const setHash = (href) => {
+    if (location.hash === href) history.replaceState(null, "", href);
+    else history.pushState(null, "", href);
+  };
+  // focus sur la section (comme le saut natif) sans redéfiler
+  const focusTarget = (el) => {
+    if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "-1");
+    el.focus({ preventScroll: true });
+  };
+  const easeInOutCubic = (t) => (t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+  const STOP_EVENTS = ["wheel", "touchstart", "mousedown", "keydown"];
+  let scrollRun = null;
+  const stopScroll = () => {
+    if (!scrollRun) return;
+    cancelAnimationFrame(scrollRun.raf);
+    STOP_EVENTS.forEach((t) => window.removeEventListener(t, stopScroll));
+    scrollRun = null;
+  };
+  const smoothScrollTo = (el) => {
+    stopScroll();
+    const startY = window.scrollY;
+    const dist = Math.abs(targetY(el) - startY);
+    if (reduce || dist < 2) { window.scrollTo(0, targetY(el)); focusTarget(el); return; }
+    const duration = Math.min(1000, Math.max(600, 450 + dist * 0.12));
+    const t0 = performance.now();
+    const run = { raf: 0 };
+    const step = (now) => {
+      const t = Math.min(1, (now - t0) / duration);
+      // cible relue à chaque image : suit tout décalage de mise en page
+      const endY = targetY(el);
+      window.scrollTo(0, startY + (endY - startY) * easeInOutCubic(t));
+      if (t < 1) run.raf = requestAnimationFrame(step);
+      else { stopScroll(); focusTarget(el); }
+    };
+    scrollRun = run;
+    STOP_EVENTS.forEach((t) => window.addEventListener(t, stopScroll, { passive: true }));
+    run.raf = requestAnimationFrame(step);
+  };
+
   navLinks.addEventListener("click", (e) => {
     const link = e.target.closest("a");
     if (!link) return;
     // menu mobile ouvert : on place la page sur la section instantanément,
     // derrière le menu encore opaque, puis le menu s'efface en douceur
+    // (un seul mouvement à l'écran : jamais le menu et le défilement ensemble)
     const href = link.getAttribute("href") || "";
-    const target = href.startsWith("#") ? document.querySelector(href) : null;
+    const target = anchorTarget(href);
     if (target && nav.classList.contains("is-open")) {
       e.preventDefault();
+      stopScroll();
       document.body.style.overflow = "";
-      const top = target.getBoundingClientRect().top + window.scrollY;
-      window.scrollTo({ top, behavior: "instant" });
-      history.pushState(null, "", href);
+      nav.classList.add("is-scrolled"); // hauteur d'arrivée du header
+      window.scrollTo(0, targetY(target));
+      setHash(href);
+      focusTarget(target);
     }
     nav.classList.remove("is-open");
     burger.setAttribute("aria-expanded", "false");
     document.body.style.overflow = "";
   });
+
+  // tous les autres liens #ancre de la page (hero, logo, FAQ, menu ordinateur…)
+  document.addEventListener("click", (e) => {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    const link = e.target.closest('a[href^="#"]');
+    if (!link) return;
+    const href = link.getAttribute("href");
+    const target = anchorTarget(href);
+    if (!target) return;
+    e.preventDefault();
+    setHash(href);
+    smoothScrollTo(target);
+  });
+
+  // arrivée sur la page avec une ancre (lien partagé) : on corrige la
+  // position pour tenir compte du header
+  if (location.hash) {
+    const target = anchorTarget(location.hash);
+    // après le load (le navigateur fait lui-même son saut natif à ce moment-là)
+    if (target) window.addEventListener("load", () => requestAnimationFrame(() => {
+      if (!scrollRun) window.scrollTo(0, targetY(target));
+    }), { once: true });
+  }
 
   /* ---------- reveal on scroll (IntersectionObserver) ---------- */
   // opacity + translateY uniquement ; will-change posé juste avant

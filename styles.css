@@ -54,7 +54,8 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 html {
-  scroll-behavior: smooth;
+  /* pas de scroll-behavior: smooth : le défilement vers les ancres est fait
+     en JS (script.js), les deux se battraient */
   -webkit-text-size-adjust: 100%;
   /* coupe le rebond élastique (rubber-band) qui révélait une bande noire
      en haut sur Mac/iOS quand on tire au-delà du sommet de la page.
@@ -604,6 +605,8 @@ ul { list-style: none; }
   -webkit-user-select: none; user-select: none;
 }
 .faq__q::-webkit-details-marker { display: none; }
+/* sections focalisées par script.js après un lien #ancre : pas de contour */
+[tabindex="-1"]:focus { outline: none; }
 .faq__q:focus-visible { outline: 2px solid var(--magenta); outline-offset: 4px; }
 .faq__icon { position: relative; flex: none; width: 14px; height: 14px; }
 .faq__icon::before, .faq__icon::after {
@@ -787,7 +790,6 @@ ul { list-style: none; }
   .hero__bg, .member__photo-img { will-change: auto; }
   .reveal, [data-reveal] { opacity: 1; transform: none; }
   .hero__title .line > span { transform: none; }
-  html { scroll-behavior: auto; }
 }
 
 /* ============================================================

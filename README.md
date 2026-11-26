@@ -166,3 +166,9 @@ horaires, adresse, email, conditions d'annulation, TVA, bios Ismaël & Wyatt.
 - Texte de la section « Votre barbier à Perwez » remplacé mot pour mot par celui fourni par Loïc (3 paragraphes, première phrase en gras), avec liens Salonkee, Instagram (nouvel onglet) et e-mail.
 - E411 et bus TEC retirés partout (texte, FAQ, JSON-LD) : infos non vérifiées. FAQ « Où se trouve le salon ? » : adresse + stationnement devant la vitrine (confirmé Salonkee + 54cutz.com).
 - `ScrollTrigger.config({ ignoreMobileResize: true })` remis pour le texte du statement (pas de recalcul quand la barre d'adresse de Safari se replie).
+
+## Badge V.I.P et FAQ animée (26/11/2026)
+- Mobile (≤ 760 px) : le badge « Premium » du Service V.I.P a sa propre ligne au-dessus du titre (avant, il tombait dans la colonne du numéro et était coupé : « PREMI »). Les autres services ne changent pas.
+- FAQ : ouverture (650 ms) et fermeture (550 ms) animées, courbe `cubic-bezier(.4,0,.2,1)`, reprises d'amautraining.be. Le contenu en dessous glisse (transform), la question se découpe au même rythme (clip-path), le « + » pivote avec la même durée. Un clic en pleine animation repart de la position actuelle, sans saut. `<details>`/`<summary>` gardés (clavier, lecteurs d'écran, sans JS). `prefers-reduced-motion` : ouverture native, sans animation.
+- Séparateurs de la FAQ passés en `border-top` + `.faq__end` (un `border-bottom` disparaissait pendant le découpage).
+- Testé avec `npx wrangler dev`, WebKit + Chromium, 375 et 1280 px : badge entier, au-dessus du titre ; FAQ fluide dans les deux sens, aucun chevauchement (≤ 0,3 px), 5 clics rapides → état final stable, autre question cliquée en pleine animation OK, reduced-motion natif. **À valider sur un vrai iPhone.**

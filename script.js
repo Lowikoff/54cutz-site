@@ -120,6 +120,100 @@
     }
   }
 
+  /* ---------- FAQ : ouverture / fermeture animées ----------
+     Reprise de la FAQ d'amautraining.be. On garde <details>/<summary>
+     (clavier, lecteurs d'écran, marche sans JS). Animer la hauteur ferait
+     recalculer toute la page à chaque image (saccades sur iPhone) : la mise
+     en page n'est calculée qu'une fois, puis tout ce qui suit la question
+     glisse avec transform (FLIP) et la question se découpe au même rythme
+     avec clip-path : rien ne se chevauche.
+     Interruptible : un clic en pleine animation repart de la position
+     actuelle, dans l'autre sens, sans saut.
+     prefers-reduced-motion : comportement natif (aucune animation). */
+  const faqItems = document.querySelectorAll(".faq__item");
+  if (faqItems.length && !reduce && Element.prototype.animate) {
+    const FAQ_EASE = "cubic-bezier(.4,0,.2,1)";
+    const FAQ_OPEN_MS = 650;
+    const FAQ_CLOSE_MS = 550;
+    // Pendant l'animation, la question est découpée 2 px plus haut (dans le
+    // padding vide) : marge contre le léger décalage entre clip-path et
+    // transform dans Safari au moment le plus rapide. Invisible à l'arrêt.
+    const CLIP_PAD = 2;
+    let run = null; // animation en cours : { item, anims, extra, opening, done }
+
+    document.querySelector(".faq__list").classList.add("faq-js");
+
+    // Tout ce qui suit l'élément dans la page : ses frères, puis ceux de ses parents
+    const contentBelow = (el) => {
+      const out = [];
+      for (let n = el; n && n !== document.body; n = n.parentElement) {
+        for (let s = n.nextElementSibling; s; s = s.nextElementSibling) {
+          if (s.tagName !== "SCRIPT" && s.offsetParent !== null &&
+              getComputedStyle(s).position !== "fixed") out.push(s);
+        }
+      }
+      return out;
+    };
+    // Pixels de la réponse encore masqués (lus sur le clip-path en cours)
+    const hiddenPx = (item) => {
+      const m = /inset\(([^)]*)\)/.exec(getComputedStyle(item).clipPath || "");
+      const v = m ? parseFloat(m[1].split(/\s+/)[2] || m[1].split(/\s+/)[0]) || 0 : CLIP_PAD;
+      return Math.max(0, v - CLIP_PAD);
+    };
+    const stop = () => { if (run) { run.anims.forEach((a) => a.cancel()); } };
+
+    faqItems.forEach((item) => {
+      const summary = item.querySelector("summary");
+      const answer = summary.nextElementSibling;
+
+      summary.addEventListener("click", (e) => {
+        e.preventDefault();
+        const opening = !item.open || item.classList.contains("is-closing");
+
+        // Position de départ : celle de l'animation en cours si elle touche
+        // cette question, sinon fermée (ouverture) ou ouverte (fermeture).
+        let from = null, fromOpacity = opening ? 0 : 1;
+        if (run && run.item === item) {
+          from = hiddenPx(item);
+          fromOpacity = parseFloat(getComputedStyle(answer).opacity);
+          stop(); run = null;
+        } else if (run) {
+          stop(); run.done(); // autre question : on termine la précédente
+        }
+
+        // Hauteur de la réponse = écart entre question ouverte et fermée
+        item.open = false;
+        const closedH = item.offsetHeight;
+        item.open = true; // la réponse reste affichée pendant la fermeture
+        const extra = item.offsetHeight - closedH;
+        if (from === null) from = opening ? extra : 0;
+        const to = opening ? 0 : extra;
+
+        const base = opening ? FAQ_OPEN_MS : FAQ_CLOSE_MS;
+        const duration = extra ? Math.max(200, base * Math.abs(to - from) / extra) : 0;
+        const opts = { duration, easing: FAQ_EASE, fill: "forwards" };
+        const clip = (v) => `inset(0 0 ${v + CLIP_PAD}px 0)`;
+        const shift = (v) => `translate3d(0, ${-v}px, 0)`;
+
+        item.classList.toggle("is-closing", !opening);
+        const anims = [item.animate([{ clipPath: clip(from) }, { clipPath: clip(to) }], opts)];
+        contentBelow(item).forEach((s) => {
+          anims.push(s.animate([{ transform: shift(from) }, { transform: shift(to) }], opts));
+        });
+        anims.push(answer.animate([{ opacity: fromOpacity }, { opacity: opening ? 1 : 0 }],
+          { duration: opening ? duration : duration * 0.6, easing: FAQ_EASE, fill: "forwards" }));
+
+        const done = () => {
+          anims.forEach((a) => a.cancel());
+          if (!opening) { item.open = false; item.classList.remove("is-closing"); }
+          if (run && run.anims === anims) run = null;
+        };
+        run = { item, anims, done };
+        anims[0].onfinish = () => { if (run && run.anims === anims) done(); };
+      });
+    });
+  }
+
   /* ---------- animated counters ---------- */
   const counters = document.querySelectorAll("[data-count]");
   if ("IntersectionObserver" in window) {

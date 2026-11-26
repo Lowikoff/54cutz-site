@@ -592,8 +592,9 @@ ul { list-style: none; }
    ============================================================ */
 .faq { padding: clamp(4rem, 10vw, 8rem) 0; }
 .faq__list { padding: 0 var(--pad); max-width: 960px; }
-.faq__item { border-bottom: 1px solid var(--line); }
-.faq__item:first-child { border-top: 1px solid var(--line); }
+/* Séparateurs en border-top (et .faq__end pour le dernier) : pendant l'animation,
+   la question se découpe par le bas (clip-path), un border-bottom disparaîtrait. */
+.faq__item, .faq__end { border-top: 1px solid var(--line); }
 .faq__q {
   display: flex; justify-content: space-between; align-items: center; gap: 1.5rem;
   padding: 1.3rem 0; cursor: pointer; list-style: none;
@@ -616,6 +617,12 @@ ul { list-style: none; }
 .faq__a p { color: var(--cream-d); line-height: 1.75; max-width: 68ch; }
 .faq__item[open] .faq__a { animation: faq-in .25s var(--ease); }
 @keyframes faq-in { from { opacity: 0; transform: translateY(-6px); } }
+/* Version animée par script.js (ouverture 650 ms, fermeture 550 ms) :
+   le « + » pivote au même rythme et avec la même courbe. */
+.faq-js .faq__item[open] .faq__a { animation: none; }
+.faq-js .faq__icon::after { transition: transform .65s cubic-bezier(.4, 0, .2, 1); }
+.faq-js .faq__item.is-closing .faq__icon::after { transform: rotate(90deg); transition-duration: .55s; }
+.faq-js .faq__item.is-closing .faq__q { color: var(--cream); }
 @media (hover: hover) and (pointer: fine) { .faq__q:hover { color: var(--magenta-glow); } }
 
 /* ============================================================
@@ -847,6 +854,10 @@ ul { list-style: none; }
   .service__desc { grid-area: desc; }
   .service__price { grid-area: price; justify-self: start; margin-top: .4rem; }
   .service__tag { position: static; display: inline-block; margin-bottom: .4rem; }
+  /* V.I.P : le badge a sa propre ligne au-dessus du titre (sinon il tombe
+     dans la colonne du numéro, large de 3rem, et se fait couper) */
+  .service--vip { grid-template-areas: "num tag" "num name" "num desc" "num price"; }
+  .service--vip .service__tag { grid-area: tag; justify-self: start; }
   @media (hover: hover) and (pointer: fine) { .service:hover { padding-left: var(--pad); } }
 
   .gallery__grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 40vw; }

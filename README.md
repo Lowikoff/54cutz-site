@@ -56,13 +56,16 @@ Sert le site comme Cloudflare (adresses sans .html, redirections 301, page 404).
 - [ ] **Domaine** : 54cutz.be libre au 26/11/2026 (whois DNS Belgium). À acheter, ajouter à Cloudflare, puis rattacher au Worker (54cutz.be + www).
 - [x] **Contrôles après publication** (workers.dev, 26/11/2026) : pages en 200, anciennes adresses `.html` en 301, 404 propre, `/README.md`, `/CLAUDE.md`, `/wrangler.jsonc`, `/.git/`, `/.claude/` en 404. ✔
 - [ ] **Sur un vrai téléphone** (iPhone Safari) : bouton Réserver flottant et menu (testé seulement en simulation).
+- [x] **Infos vérifiées sur Salonkee le 26/11/2026** : horaires, 4 barbers, prix par barber, politique d'annulation identiques au site. ✔ Durées (pas affichées sur le site) : Ismaël & Wyatt coupe 30 min, coupe + barbe 45 min, V.I.P 1 h, transformation 45 min (Ismaël : 45 min–1 h), barbe 15 min ; Raphaël coupe 45 min, coupe + barbe 1 h, barbe 30 min ; Bastien coupe 30 min, coupe + barbe 45 min.
+- [x] **N° d'entreprise corrigé** (26/11/2026) : l'ancien n° BE 0803.277.289 (Ismaël Alaoui, personne physique) est arrêté depuis le 01/01/2026 (BCE). Nouveau : **54 CUTZ SRL, BE 1031.637.857** (Salonkee + BCE). Mis à jour dans le footer des 3 pages, les mentions légales, la politique de confidentialité et le JSON-LD (`legalName`, `vatID`). ✔
+- [x] **Horaires** : ligne du jour en magenta + « Aujourd'hui », badge « Ouvert maintenant · jusqu'à 20h » / « Fermé · ouvre mardi à 10h » (heure de Bruxelles, mis à jour chaque minute, caché sans JS). Horaires définis une fois dans `HOURS` (`script.js`) : si les horaires changent, modifier `HOURS`, la liste `.hours__list` et le JSON-LD. ✔
 
 ## Pages légales (Belgique)
 - `mentions-legales.html` — éditeur, BCE/TVA, hébergeur, propriété intellectuelle, droit belge (Livre XII Code de droit économique).
 - `politique-confidentialite.html` — RGPD : données, finalités, bases légales, sous-traitants (Salonkee/Cloudflare/Google Maps au clic), cookies, conservation, droits, réclamation APD.
 - Liées dans le footer du site + entre elles. En `noindex` (volontairement hors sitemap).
 - ⚠️ **Modèles** rédigés selon le droit belge/RGPD à partir des infos connues — à faire relire par un professionnel avant usage définitif.
-- [ ] Vérifier le **nom légal exact** et la forme juridique (personne physique / société) auprès de la BCE.
+- [x] Nom légal et forme juridique vérifiés à la BCE (26/11/2026) : **54 CUTZ SRL**, BE 1031.637.857, siège Chaussée de Charleroi 45, administrateurs Ismaël Alaoui et Wyatt Devillers. ✔
 - [x] Hébergeur des mentions légales et sous-traitants RGPD passés à Cloudflare. ✔
 
 ## SEO (domaine cible : 54cutz.be)
@@ -91,6 +94,11 @@ Sert le site comme Cloudflare (adresses sans .html, redirections 301, page 404).
 Nom, baseline, services (Coupe / Barbe / Coupe+Barbe / Transformation / V.I.P),
 horaires, adresse, email, conditions d'annulation, TVA, bios Ismaël & Wyatt.
 
+## 26/11/2026 (après-midi)
+- Vérification Salonkee + BCE : n° d'entreprise remplacé par celui de 54 CUTZ SRL (BE 1031.637.857).
+- Horaires : jour actuel mis en évidence (`data-day` + `is-today`) et badge ouvert/fermé (fuseau Europe/Brussels).
+- Testé avec `npx wrangler dev`, Chromium + WebKit, 375 et 1280 px, horloge simulée (visiteur à New York / Tokyo) : mardi 11h, mardi 21h, samedi 14h30, lundi, dimanche 16h, mercredi 8h, passage de 15h et de minuit, sans JS.
+
 ## Améliorations du 26/11/2026
 - Images optimisées : logo 500 Ko → 40 Ko, photos utilisées environ 3 Mo → 1 Mo (mêmes noms de fichiers).
 - Loader : retiré au plus tard après 2,5 s (avant, il attendait le chargement de toutes les images).
@@ -106,7 +114,11 @@ horaires, adresse, email, conditions d'annulation, TVA, bios Ismaël & Wyatt.
 
 ## À confirmer avec le client
 - [ ] Hero : « Nous sommes Ismaël & Wyatt » alors que l'équipe compte 4 barbers. Garder, ou citer les 4 ?
-- [ ] Bio de Wyatt : « depuis plus d'un an, j'ai 18 ans » (texte de l'ancien site) — encore exact ?
+- [ ] Bio de Wyatt : « depuis plus d'un an, j'ai 18 ans » (texte de l'ancien site) — encore exact ? (pas vérifiable en ligne)
+- [ ] Bio d'Ismaël « trois ans que je pratique » et stat « 3+ ans d'expérience » — encore exact ? (ancien n° BCE ouvert en juillet 2023)
+- [ ] Instagram de Raphaël `@menjoucutz` et Bastien `@sneizycutz` : repris des noms Salonkee (« Menjoucutz », « sneizycutz »), comptes pas vérifiés.
+- [ ] Salonkee affiche un téléphone (+32 479 83 28 56) ; le site n'en met pas (le salon ne répond pas aux appels). Garder ainsi ?
+- [ ] Afficher les durées des prestations sur le site (connues via Salonkee, voir checklist) ?
 - [ ] Stat « 100 % sens du détail » : ce n'est pas un vrai chiffre. Garder ou remplacer (ex. années d'ouverture du salon) ?
 - [ ] Fiche Planity : téléphone et horaires différents (lun–sam 9h–18h) → la mettre à jour ou la supprimer.
 - [ ] Lien de la fiche Google (pour un bouton « Avis Google »).

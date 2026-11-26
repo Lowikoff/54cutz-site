@@ -63,6 +63,8 @@
     "url": "https://54cutz.be/",
     "image": "https://54cutz.be/assets/images/gallery14.jpg",
     "logo": "https://54cutz.be/assets/logo.png",
+    "legalName": "54 CUTZ SRL",
+    "vatID": "BE1031637857",
     "email": "54cutz@gmail.com",
     "priceRange": "€€",
     "currenciesAccepted": "EUR",
@@ -391,15 +393,21 @@
 
       <div class="infos__grid">
         <div class="hours" data-reveal>
-          <h3 class="hours__title">Horaires</h3>
+          <div class="hours__head">
+            <h3 class="hours__title">Horaires</h3>
+            <!-- Rempli par script.js (heure de Bruxelles) ; reste caché sans JS -->
+            <p class="hours__status" id="hoursStatus" role="status" hidden></p>
+          </div>
+          <!-- data-day = numéro de getDay() (0 = dimanche). Horaires à garder
+               alignés sur HOURS dans script.js et sur le JSON-LD. -->
           <ul class="hours__list">
-            <li><span>Lundi</span><b class="closed">Fermé</b></li>
-            <li><span>Mardi</span><b>10h — 20h</b></li>
-            <li><span>Mercredi</span><b>10h — 20h</b></li>
-            <li><span>Jeudi</span><b>10h — 20h</b></li>
-            <li><span>Vendredi</span><b>10h — 20h</b></li>
-            <li><span>Samedi</span><b>10h — 15h</b></li>
-            <li><span>Dimanche</span><b>10h — 15h</b></li>
+            <li data-day="1"><span>Lundi</span><b class="closed">Fermé</b></li>
+            <li data-day="2"><span>Mardi</span><b>10h — 20h</b></li>
+            <li data-day="3"><span>Mercredi</span><b>10h — 20h</b></li>
+            <li data-day="4"><span>Jeudi</span><b>10h — 20h</b></li>
+            <li data-day="5"><span>Vendredi</span><b>10h — 20h</b></li>
+            <li data-day="6"><span>Samedi</span><b>10h — 15h</b></li>
+            <li data-day="0"><span>Dimanche</span><b>10h — 15h</b></li>
           </ul>
 
           <div class="address">
@@ -469,7 +477,7 @@
     </div>
 
     <div class="footer__bottom">
-      <span>© <span id="year"></span> Salon 54cutz · TVA BE0803.277.289</span>
+      <span>© <span id="year"></span> Salon 54cutz · TVA BE1031.637.857</span>
       <span>
         <a class="link-underline" data-cursor href="/mentions-legales">Mentions légales</a>
         &nbsp;·&nbsp;

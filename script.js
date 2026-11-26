@@ -210,6 +210,87 @@
     navLinks.addEventListener("click", () => setTimeout(updateFab, 0));
   }
 
+  /* ---------- horaires : jour actuel + ouvert / fermé ---------- */
+  // Seule définition des horaires dans le JS (le badge et la ligne du jour
+  // en dépendent). Index = getDay() : 0 = dimanche … 6 = samedi.
+  // [ouverture, fermeture] en minutes depuis minuit ; null = fermé.
+  // À garder alignée sur la liste .hours__list du HTML et le JSON-LD.
+  const HOURS = [
+    [600, 900],   // dimanche 10h–15h
+    null,         // lundi fermé
+    [600, 1200],  // mardi 10h–20h
+    [600, 1200],  // mercredi
+    [600, 1200],  // jeudi
+    [600, 1200],  // vendredi
+    [600, 900]    // samedi 10h–15h
+  ];
+  const DAY_NAMES = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
+  const hoursList = document.querySelector(".hours__list");
+  const hoursStatus = document.getElementById("hoursStatus");
+
+  // Jour et heure à Bruxelles, quel que soit le fuseau du visiteur.
+  const brusselsFmt = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Europe/Brussels", weekday: "short",
+    hour: "numeric", minute: "numeric", hourCycle: "h23"
+  });
+  const brusselsNow = () => {
+    const parts = {};
+    brusselsFmt.formatToParts(new Date()).forEach((p) => { parts[p.type] = p.value; });
+    return {
+      day: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(parts.weekday),
+      min: (parseInt(parts.hour, 10) % 24) * 60 + parseInt(parts.minute, 10)
+    };
+  };
+  const fmtTime = (m) => Math.floor(m / 60) + "h" + (m % 60 ? String(m % 60).padStart(2, "0") : "");
+
+  const hoursState = ({ day, min }) => {
+    const t = HOURS[day];
+    if (t && min >= t[0] && min < t[1]) {
+      return { open: true, text: "Ouvert maintenant · jusqu'à " + fmtTime(t[1]) };
+    }
+    if (t && min < t[0]) {
+      return { open: false, text: "Fermé · ouvre aujourd'hui à " + fmtTime(t[0]) };
+    }
+    for (let i = 1; i <= 7; i++) {
+      const d = (day + i) % 7;
+      if (HOURS[d]) return { open: false, text: "Fermé · ouvre " + DAY_NAMES[d] + " à " + fmtTime(HOURS[d][0]) };
+    }
+    return null;
+  };
+
+  let lastDay = -1;
+  const updateHours = () => {
+    const now = brusselsNow();
+    if (now.day < 0) return;
+    if (hoursList && now.day !== lastDay) {
+      hoursList.querySelectorAll("li[data-day]").forEach((li) => {
+        const isToday = +li.dataset.day === now.day;
+        li.classList.toggle("is-today", isToday);
+        if (isToday) li.setAttribute("aria-current", "date"); else li.removeAttribute("aria-current");
+        const label = li.querySelector(".hours__today");
+        if (isToday && !label) {
+          li.querySelector("span").insertAdjacentHTML("beforeend", ' <small class="hours__today">Aujourd’hui</small>');
+        } else if (!isToday && label) {
+          label.remove();
+        }
+      });
+      lastDay = now.day;
+    }
+    const st = hoursState(now);
+    if (hoursStatus && st) {
+      if (hoursStatus.textContent !== st.text) hoursStatus.textContent = st.text;
+      hoursStatus.classList.toggle("is-open", st.open);
+      hoursStatus.hidden = false;
+    }
+  };
+  if (hoursList || hoursStatus) {
+    updateHours();
+    // mise à jour au début de chaque minute, et au retour sur l'onglet
+    setTimeout(() => { updateHours(); setInterval(updateHours, 60000); },
+      60000 - (Date.now() % 60000) + 50);
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) updateHours(); });
+  }
+
   /* ---------- active nav link on scroll ---------- */
   const sections = ["services", "team", "gallery", "infos", "book"]
     .map((id) => document.getElementById(id)).filter(Boolean);

@@ -30,6 +30,28 @@
   });
   setTimeout(finishLoader, reduce ? 300 : 2500);
 
+  /* ---------- pré-décodage des photos (équipe + galerie) ----------
+     Sans ça, le navigateur décode ces grandes photos au moment où elles
+     entrent à l'écran : à-coup au premier passage (défilement rapide vers
+     une ancre). Après le load, en temps libre, une photo à la fois.
+     La galerie reste en loading="lazy" dans le HTML (rien ne gêne le
+     premier affichage) ; ici on la passe en eager pour la charger puis
+     la décoder en arrière-plan. */
+  window.addEventListener("load", () => {
+    const idle = window.requestIdleCallback
+      ? (fn) => requestIdleCallback(fn, { timeout: 2000 })
+      : (fn) => setTimeout(fn, 200);
+    const imgs = [...document.querySelectorAll(".member__photo-img, .gallery__item img")];
+    const next = () => {
+      const img = imgs.shift();
+      if (!img) return;
+      if (img.loading === "lazy") img.loading = "eager";
+      const p = img.decode ? img.decode() : Promise.resolve();
+      p.catch(() => {}).then(() => idle(next));
+    };
+    idle(next);
+  }, { once: true });
+
   /* ---------- hero text reveal ---------- */
   function playHero() {
     if (reduce) return;

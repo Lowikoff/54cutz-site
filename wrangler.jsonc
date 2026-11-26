@@ -1,4 +1,4 @@
-// Configuration Cloudflare (Workers Builds lance `npx wrangler deploy` à chaque push sur main).
+// Configuration Cloudflare : publication depuis le Mac avec `npx wrangler deploy`.
 // Site statique servi depuis la racine du dépôt. Les fichiers à NE PAS publier
 // sont listés dans .assetsignore.
 // Ne jamais changer "name" : sinon Cloudflare crée un deuxième projet.

@@ -1,0 +1,4 @@
+# Démo : indexation bloquée tant que le client n'a pas validé le site.
+# Le jour de la validation : supprimer ce fichier (voir README).
+/*
+  X-Robots-Tag: noindex, nofollow

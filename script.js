@@ -142,30 +142,28 @@
   }
 
   /* ---------- parallax (GSAP ScrollTrigger) ---------- */
-  // Souris uniquement : au tactile, le parallaxe en scrub saccade et
-  // découvre les bords quand la barre d'adresse de Safari se replie.
-  // Seul le fond du hero porte encore data-parallax.
-  const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  // Souris ET tactile. Chaque couche animée est plus haute que son cadre
+  // et ne se déplace que dans sa marge (calcul dans styles.css) : aucun bord
+  // ne se découvre. scrub: true = la photo suit le doigt en direct, et
+  // s'arrête avec lui (aucune transition CSS sur ces transforms).
+  // ignoreMobileResize : pas de recalcul quand la barre d'adresse de
+  // Safari se replie (le hero est en 100svh, sa hauteur ne change pas).
   if (hasGSAP && window.ScrollTrigger) {
     gsap.registerPlugin(ScrollTrigger);
     ScrollTrigger.config({ ignoreMobileResize: true });
   }
-  if (hasGSAP && !reduce && finePointer) {
-    gsap.registerPlugin(ScrollTrigger);
-    document.querySelectorAll("[data-parallax]").forEach((el) => {
-      const speed = parseFloat(el.dataset.parallax) || 0.15;
-      // Hero bg sits at the top of the page: anchor it at "top top" so there is
-      // NO downward shift (and no black strip) when the page is at scroll 0.
-      const isHero = el.classList.contains("hero__bg");
-      gsap.to(el, {
-        yPercent: speed * 100,
-        ease: "none",
-        scrollTrigger: {
-          trigger: isHero ? ".hero" : el,
-          start: isHero ? "top top" : "top bottom",
-          end: "bottom top",
-          scrub: true
-        }
+  if (hasGSAP && window.ScrollTrigger && !reduce) {
+    const heroBg = document.querySelector(".hero__bg");
+    if (heroBg) {
+      gsap.fromTo(heroBg, { yPercent: 0 }, {
+        yPercent: 15, ease: "none", force3D: true,
+        scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true }
+      });
+    }
+    document.querySelectorAll(".member__photo-img").forEach((img) => {
+      gsap.fromTo(img, { yPercent: -8 }, {
+        yPercent: 8, ease: "none", force3D: true,
+        scrollTrigger: { trigger: img.closest(".member__photo"), start: "top bottom", end: "bottom top", scrub: true }
       });
     });
   }

@@ -4,11 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Barbier à Perwez — Salon 54cutz | Coupe, Barbe &amp; Barbershop</title>
-  <meta name="description" content="54cutz, votre barbershop à Perwez (Brabant wallon). Coupe, barbe, transformation et service V.I.P par des barbers passionnés. Réservez en ligne sur Salonkee — Chaussée de Charleroi 45, 1360 Perwez." />
-  <meta name="keywords" content="barbier Perwez, barbershop Perwez, coiffeur homme Perwez, coupe homme Perwez, barbe Perwez, 54cutz, barbier Brabant wallon, coiffeur Thorembais, barbier 1360" />
+  <title>Barber à Perwez, Brabant wallon | Barbier 54cutz</title>
+  <meta name="description" content="Votre barber à Perwez : 54cutz, salon de barbier en Brabant wallon. Coupe, barbe, transformation et service V.I.P. Réservation en ligne sur Salonkee." />
   <meta name="author" content="Salon 54cutz" />
-  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+  <meta name="robots" content="noindex, nofollow" /><!-- démo : à retirer quand le client valide (voir README) -->
   <meta name="theme-color" content="#08080a" />
   <link rel="canonical" href="https://54cutz.be/" />
 
@@ -22,8 +21,8 @@
   <meta property="og:type" content="business.business" />
   <meta property="og:site_name" content="Salon 54cutz" />
   <meta property="og:url" content="https://54cutz.be/" />
-  <meta property="og:title" content="Barbier à Perwez — Salon 54cutz" />
-  <meta property="og:description" content="Barbershop à Perwez. Coupe · Barbe · Transformation · V.I.P. Réservez en ligne." />
+  <meta property="og:title" content="Barber à Perwez, Brabant wallon | Barbier 54cutz" />
+  <meta property="og:description" content="Barber et barbier à Perwez, en Brabant wallon. Coupe · Barbe · Transformation · V.I.P. Réservation en ligne sur Salonkee." />
   <meta property="og:locale" content="fr_BE" />
   <meta property="og:image" content="https://54cutz.be/assets/images/gallery14.jpg" />
   <meta property="og:image:width" content="1920" />
@@ -36,8 +35,8 @@
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Barbier à Perwez — Salon 54cutz" />
-  <meta name="twitter:description" content="Barbershop à Perwez. Coupe · Barbe · Transformation · V.I.P. Réservez en ligne." />
+  <meta name="twitter:title" content="Barber à Perwez, Brabant wallon | Barbier 54cutz" />
+  <meta name="twitter:description" content="Barber et barbier à Perwez, en Brabant wallon. Coupe · Barbe · Transformation · V.I.P. Réservation en ligne sur Salonkee." />
   <meta name="twitter:image" content="https://54cutz.be/assets/images/gallery14.jpg" />
 
   <link rel="icon" href="assets/favicon.ico" sizes="any" />
@@ -47,7 +46,6 @@
   <!-- Polices hébergées sur le site (aucun appel à Google Fonts) -->
   <link rel="preload" href="assets/fonts/anton-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="preload" href="assets/images/gallery14.jpg" as="image" fetchpriority="high" />
 
   <link rel="stylesheet" href="styles.css" />
 
@@ -55,86 +53,222 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "HairSalon",
-    "@id": "https://54cutz.be/#business",
-    "name": "Salon 54cutz",
-    "alternateName": "54Cutz",
-    "description": "Barbershop à Perwez (Brabant wallon). Coupe, barbe, transformation et service V.I.P par des barbers passionnés ayant le sens du détail.",
-    "url": "https://54cutz.be/",
-    "image": "https://54cutz.be/assets/images/gallery14.jpg",
-    "logo": "https://54cutz.be/assets/logo.png",
-    "legalName": "54 CUTZ SRL",
-    "vatID": "BE1031637857",
-    "email": "54cutz@gmail.com",
-    "priceRange": "€€",
-    "currenciesAccepted": "EUR",
-    "paymentAccepted": "Espèces, Carte, Paiement mobile",
-    "address": {
-      "@type": "PostalAddress",
-      "streetAddress": "Chaussée de Charleroi 45",
-      "postalCode": "1360",
-      "addressLocality": "Perwez",
-      "addressRegion": "Brabant wallon",
-      "addressCountry": "BE"
-    },
-    "geo": {
-      "@type": "GeoCoordinates",
-      "latitude": 50.6364179,
-      "longitude": 4.7802487
-    },
-    "hasMap": "https://maps.google.com/?q=Chauss%C3%A9e+de+Charleroi+45,+1360+Perwez",
-    "areaServed": [
-      { "@type": "City", "name": "Perwez" },
-      { "@type": "City", "name": "Thorembais-Saint-Trond" },
-      { "@type": "City", "name": "Gembloux" },
-      { "@type": "AdministrativeArea", "name": "Brabant wallon" }
-    ],
-    "sameAs": [
-      "https://www.instagram.com/54cutz_/",
-      "https://www.tiktok.com/@54cutz_",
-      "https://www.facebook.com/p/54cutz-61567134172609/",
-      "https://salonkee.be/salon/54-cutz?lang=fr"
-    ],
-    "openingHoursSpecification": [
+    "@graph": [
       {
-        "@type": "OpeningHoursSpecification",
-        "dayOfWeek": ["Tuesday", "Wednesday", "Thursday", "Friday"],
-        "opens": "10:00",
-        "closes": "20:00"
+        "@type": "HairSalon",
+        "@id": "https://54cutz.be/#business",
+        "name": "Salon 54cutz",
+        "alternateName": "54Cutz",
+        "description": "Barbershop à Perwez (Brabant wallon). Coupe, barbe, transformation et service V.I.P par des barbers passionnés ayant le sens du détail.",
+        "url": "https://54cutz.be/",
+        "image": "https://54cutz.be/assets/images/gallery14.jpg",
+        "logo": "https://54cutz.be/assets/logo.png",
+        "legalName": "54 CUTZ SRL",
+        "vatID": "BE1031637857",
+        "email": "54cutz@gmail.com",
+        "priceRange": "€€",
+        "currenciesAccepted": "EUR",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Chaussée de Charleroi 45",
+          "postalCode": "1360",
+          "addressLocality": "Perwez",
+          "addressRegion": "Brabant wallon",
+          "addressCountry": "BE"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": 50.6364179,
+          "longitude": 4.7802487
+        },
+        "hasMap": "https://maps.google.com/?q=Chauss%C3%A9e+de+Charleroi+45,+1360+Perwez",
+        "areaServed": [
+          {
+            "@type": "City",
+            "name": "Perwez"
+          },
+          {
+            "@type": "City",
+            "name": "Thorembais-Saint-Trond"
+          },
+          {
+            "@type": "City",
+            "name": "Gembloux"
+          },
+          {
+            "@type": "AdministrativeArea",
+            "name": "Brabant wallon"
+          }
+        ],
+        "sameAs": [
+          "https://www.instagram.com/54cutz_/",
+          "https://www.tiktok.com/@54cutz_",
+          "https://www.facebook.com/p/54cutz-61567134172609/",
+          "https://salonkee.be/salon/54-cutz?lang=fr"
+        ],
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": [
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday"
+            ],
+            "opens": "10:00",
+            "closes": "20:00"
+          },
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": [
+              "Saturday",
+              "Sunday"
+            ],
+            "opens": "10:00",
+            "closes": "15:00"
+          }
+        ],
+        "employee": [
+          {
+            "@type": "Person",
+            "name": "Ismaël",
+            "jobTitle": "Barber"
+          },
+          {
+            "@type": "Person",
+            "name": "Wyatt",
+            "jobTitle": "Barber"
+          },
+          {
+            "@type": "Person",
+            "name": "Raphaël",
+            "jobTitle": "Barber"
+          },
+          {
+            "@type": "Person",
+            "name": "Bastien",
+            "jobTitle": "Barber"
+          }
+        ],
+        "makesOffer": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Coupe"
+            },
+            "priceCurrency": "EUR",
+            "price": "25"
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Barbe"
+            },
+            "priceCurrency": "EUR",
+            "price": "15"
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Coupe + Barbe"
+            },
+            "priceCurrency": "EUR",
+            "price": "35"
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Transformation"
+            },
+            "priceCurrency": "EUR",
+            "price": "40"
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Service V.I.P"
+            },
+            "priceCurrency": "EUR",
+            "price": "60"
+          }
+        ],
+        "potentialAction": {
+          "@type": "ReserveAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://salonkee.be/salon/54-cutz?lang=fr",
+            "inLanguage": "fr-BE",
+            "actionPlatform": [
+              "http://schema.org/DesktopWebPlatform",
+              "http://schema.org/MobileWebPlatform"
+            ]
+          },
+          "result": {
+            "@type": "Reservation",
+            "name": "Réservation de rendez-vous"
+          }
+        },
+        "subjectOf": {
+          "@id": "https://54cutz.be/#faq"
+        }
       },
       {
-        "@type": "OpeningHoursSpecification",
-        "dayOfWeek": ["Saturday", "Sunday"],
-        "opens": "10:00",
-        "closes": "15:00"
-      }
-    ],
-    "employee": [
-      { "@type": "Person", "name": "Ismaël", "jobTitle": "Barber" },
-      { "@type": "Person", "name": "Wyatt", "jobTitle": "Barber" },
-      { "@type": "Person", "name": "Raphaël", "jobTitle": "Barber" },
-      { "@type": "Person", "name": "Bastien", "jobTitle": "Barber" }
-    ],
-    "makesOffer": [
-      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Coupe" }, "priceCurrency": "EUR", "price": "25" },
-      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Barbe" }, "priceCurrency": "EUR", "price": "15" },
-      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Coupe + Barbe" }, "priceCurrency": "EUR", "price": "35" },
-      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Transformation" }, "priceCurrency": "EUR", "price": "40" },
-      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Service V.I.P" }, "priceCurrency": "EUR", "price": "60" }
-    ],
-    "potentialAction": {
-      "@type": "ReserveAction",
-      "target": {
-        "@type": "EntryPoint",
-        "urlTemplate": "https://salonkee.be/salon/54-cutz?lang=fr",
+        "@type": "FAQPage",
+        "@id": "https://54cutz.be/#faq",
+        "url": "https://54cutz.be/#faq",
         "inLanguage": "fr-BE",
-        "actionPlatform": [
-          "http://schema.org/DesktopWebPlatform",
-          "http://schema.org/MobileWebPlatform"
+        "about": {
+          "@id": "https://54cutz.be/#business"
+        },
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Comment prendre rendez-vous chez 54cutz ?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "En ligne, sur Salonkee (salonkee.be/salon/54-cutz) : choisissez votre barber, la prestation et le créneau. Le salon ne répond pas au téléphone pendant les heures d'ouverture ; pour une question, écrivez-nous sur Instagram, TikTok ou à 54cutz@gmail.com."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Combien coûte une coupe ?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Coupe dès 25 €, barbe dès 15 €, coupe + barbe dès 35 €, transformation 40 € et service V.I.P 60 €. Le prix dépend de la prestation et du barber (tableau des tarifs sur la page)."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Quels sont vos horaires ?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Du mardi au vendredi de 10h à 20h, le samedi et le dimanche de 10h à 15h. Le salon est fermé le lundi."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Que se passe-t-il si j'annule mon rendez-vous ?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Si vous annulez moins de 24 h avant, 50 % du prix de la prestation est dû. Moins de 12 h avant, ou en cas d'absence, la totalité du prix est due."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Où se trouve le salon ?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Chaussée de Charleroi 45, 1360 Perwez (Brabant wallon). Le salon est accessible par l'autoroute E411 et en bus TEC, et vous pouvez vous garer devant la vitrine."
+            }
+          }
         ]
-      },
-      "result": { "@type": "Reservation", "name": "Réservation de rendez-vous" }
-    }
+      }
+    ]
   }
   </script>
 </head>
@@ -170,19 +304,28 @@
   <main>
     <!-- ===== HERO ===== -->
     <section class="hero" id="hero">
-      <div class="hero__bg" data-parallax="0.2">
-        <div class="hero__bg-img"></div>
+      <!-- .hero__bg = couche animée (parallaxe GSAP), plus haute que le hero -->
+      <div class="hero__bg">
+        <!-- Téléphone en portrait : seule la bande centrale de la photo est visible
+             (object-fit: cover) → recadrage central 760×1129 en WebP, même rendu, 56 Ko au lieu de 265 Ko -->
+        <picture>
+          <source media="(max-width: 700px) and (max-aspect-ratio: 4/5)" type="image/webp"
+                  srcset="assets/images/gallery14-portrait.webp" width="760" height="1129" />
+          <img class="hero__bg-img" src="assets/images/gallery14.jpg" width="1920" height="1129"
+             alt="Intérieur du salon 54cutz à Perwez : fauteuils de barbier noir et or, anneaux lumineux et mur végétal avec le néon « Time to shine! »"
+             fetchpriority="high" decoding="async" />
+        </picture>
         <div class="hero__bg-overlay"></div>
       </div>
 
       <div class="hero__content">
-        <p class="hero__eyebrow reveal">Barbershop · Perwez</p>
+        <p class="hero__eyebrow reveal">Salon 54cutz · Barbershop</p>
         <h1 class="hero__title">
-          <span class="line"><span>BARBER</span></span>
-          <span class="line line--accent"><span>shop</span></span>
+          <span class="line"><span>Barber</span></span>
+          <span class="line line--accent"><span>à Perwez</span></span>
         </h1>
-        <p class="hero__sub reveal">
-          Nous sommes <strong>Ismaël</strong> &amp; <strong>Wyatt</strong>,
+        <p class="hero__sub">
+          Votre salon de barbier en Brabant wallon. Nous sommes <strong>Ismaël</strong> &amp; <strong>Wyatt</strong>,
           de jeunes barbers passionnés ayant le sens du détail.
         </p>
         <div class="hero__actions reveal">
@@ -211,6 +354,30 @@
         Le détail fait la différence. Chaque coupe est pensée pour vous —
         précision, style et une expérience qui vous ressemble.
       </p>
+
+      <div class="about">
+        <h2 class="about__title reveal">Votre barbier à Perwez, en Brabant wallon</h2>
+        <div class="about__body reveal">
+          <p>
+            Le salon 54cutz est un barbershop installé Chaussée de Charleroi 45, à Perwez.
+            Ismaël, Wyatt, Raphaël et Bastien vous y accueillent du mardi au dimanche pour une
+            coupe, une barbe, une coupe + barbe, une transformation ou le service V.I.P, avec
+            shampooing, consultation approfondie et serviette chaude.
+          </p>
+          <p>
+            Tous les rendez-vous se prennent en ligne sur
+            <a class="link-underline" href="https://salonkee.be/salon/54-cutz?lang=fr" target="_blank" rel="noopener">Salonkee</a> :
+            vous choisissez votre barber, la prestation et le créneau, et vous voyez le prix avant
+            de confirmer. Pour garantir un service optimal, le salon ne répond pas au téléphone
+            pendant les heures d'ouverture&nbsp;; pour une question, écrivez-nous sur Instagram,
+            TikTok ou par e-mail.
+          </p>
+          <p>
+            Perwez se trouve entre Gembloux, Jodoigne et Eghezée. Le salon est facilement
+            accessible par l'autoroute E411 et en bus TEC, et vous pouvez vous garer devant la vitrine.
+          </p>
+        </div>
+      </div>
     </section>
 
     <!-- ===== SERVICES ===== -->
@@ -254,7 +421,7 @@
           <span class="service__price" data-price>60 €</span>
         </li>
       </ul>
-      <div class="pricing" data-reveal>
+      <div class="pricing" id="tarifs" data-reveal>
         <h3 class="pricing__title">Tarifs par barber</h3>
         <div class="pricing__scroll">
           <table class="pricing__table">
@@ -316,7 +483,12 @@
 
       <div class="team__grid">
         <article class="member" data-reveal>
-          <div class="member__photo member__photo--ismael" role="img" aria-label="Portrait d'Ismaël, barber chez 54cutz"></div>
+          <div class="member__photo">
+            <div class="member__photo-zoom">
+              <img class="member__photo-img" src="assets/images/isma.jpg" width="900" height="1350"
+                   alt="Ismaël coupe les cheveux d'un client au salon 54cutz, devant un anneau lumineux" loading="lazy" decoding="async" />
+            </div>
+          </div>
           <div class="member__body">
             <h3 class="member__name">Ismaël</h3>
             <a class="member__handle" href="https://instagram.com/54cutz_" target="_blank" rel="noopener">@54cutz_</a>
@@ -328,7 +500,12 @@
         </article>
 
         <article class="member" data-reveal>
-          <div class="member__photo member__photo--wyatt" role="img" aria-label="Portrait de Wyatt, barber chez 54cutz"></div>
+          <div class="member__photo">
+            <div class="member__photo-zoom">
+              <img class="member__photo-img" src="assets/images/wyatt.jpg" width="900" height="1350"
+                   alt="Wyatt pendant une coupe, face à un client au dégradé, au salon 54cutz" loading="lazy" decoding="async" />
+            </div>
+          </div>
           <div class="member__body">
             <h3 class="member__name">Wyatt</h3>
             <a class="member__handle" href="https://instagram.com/w9cutzz" target="_blank" rel="noopener">@w9cutzz</a>
@@ -372,11 +549,21 @@
       </div>
 
       <div class="gallery__grid">
-        <figure class="gallery__item gallery__item--1" data-reveal role="img" aria-label="Réalisation du salon 54cutz (1/5)"></figure>
-        <figure class="gallery__item gallery__item--2" data-reveal role="img" aria-label="Réalisation du salon 54cutz (2/5)"></figure>
-        <figure class="gallery__item gallery__item--3" data-reveal role="img" aria-label="Réalisation du salon 54cutz (3/5)"></figure>
-        <figure class="gallery__item gallery__item--4" data-reveal role="img" aria-label="Réalisation du salon 54cutz (4/5)"></figure>
-        <figure class="gallery__item gallery__item--5" data-reveal role="img" aria-label="Réalisation du salon 54cutz (5/5)"></figure>
+        <figure class="gallery__item gallery__item--1" data-reveal>
+          <img src="assets/images/gallery6.jpg" width="933" height="1400" alt="Le salon 54cutz baigné de néon magenta : fauteuils de barbier, miroirs ronds rétroéclairés et plafond en hexagones lumineux" loading="lazy" decoding="async" />
+        </figure>
+        <figure class="gallery__item gallery__item--2" data-reveal>
+          <img src="assets/images/gallery3.jpg" width="1400" height="598" alt="Enseigne néon 54CUTZ rose et bleue sur un mur de briques" loading="lazy" decoding="async" />
+        </figure>
+        <figure class="gallery__item gallery__item--3" data-reveal>
+          <img src="assets/images/gallery9.jpg" width="1400" height="933" alt="Client de profil après une coupe dégradée et une barbe taillée" loading="lazy" decoding="async" />
+        </figure>
+        <figure class="gallery__item gallery__item--4" data-reveal>
+          <img src="assets/images/gallery12.jpg" width="933" height="1400" alt="Un barber termine la coupe d'un client installé dans un fauteuil noir et or" loading="lazy" decoding="async" />
+        </figure>
+        <figure class="gallery__item gallery__item--5" data-reveal>
+          <img src="assets/images/gallery11.jpg" width="933" height="1400" alt="Un barber aux gants roses travaille les contours d'un client sous un anneau lumineux" loading="lazy" decoding="async" />
+        </figure>
       </div>
       <p class="gallery__note reveal">
         Plus de réalisations sur
@@ -432,6 +619,37 @@
       </div>
     </section>
 
+    <!-- ===== FAQ ===== -->
+    <!-- Réponses vérifiées (Salonkee, 54cutz.com). Garder le JSON-LD FAQPage identique. -->
+    <section class="faq" id="faq">
+      <div class="section-head">
+        <span class="section-head__index">05</span>
+        <h2 class="section-head__title reveal">Questions fréquentes</h2>
+      </div>
+      <div class="faq__list">
+        <details class="faq__item" data-reveal>
+          <summary class="faq__q">Comment prendre rendez-vous chez 54cutz ?<span class="faq__icon" aria-hidden="true"></span></summary>
+          <div class="faq__a"><p>En ligne, sur <a class="link-underline" href="https://salonkee.be/salon/54-cutz?lang=fr" target="_blank" rel="noopener">Salonkee</a> : choisissez votre barber, la prestation et le créneau. Le salon ne répond pas au téléphone pendant les heures d'ouverture ; pour une question, écrivez-nous sur Instagram, TikTok ou à <a class="link-underline" href="mailto:54cutz@gmail.com">54cutz@gmail.com</a>.</p></div>
+        </details>
+        <details class="faq__item" data-reveal>
+          <summary class="faq__q">Combien coûte une coupe ?<span class="faq__icon" aria-hidden="true"></span></summary>
+          <div class="faq__a"><p>Coupe dès 25&nbsp;€, barbe dès 15&nbsp;€, coupe + barbe dès 35&nbsp;€, transformation 40&nbsp;€ et service V.I.P 60&nbsp;€. Le prix dépend de la prestation et du barber : voir le <a class="link-underline" href="#tarifs">tableau des tarifs</a>.</p></div>
+        </details>
+        <details class="faq__item" data-reveal>
+          <summary class="faq__q">Quels sont vos horaires ?<span class="faq__icon" aria-hidden="true"></span></summary>
+          <div class="faq__a"><p>Du mardi au vendredi de 10h à 20h, le samedi et le dimanche de 10h à 15h. Le salon est fermé le lundi.</p></div>
+        </details>
+        <details class="faq__item" data-reveal>
+          <summary class="faq__q">Que se passe-t-il si j'annule mon rendez-vous ?<span class="faq__icon" aria-hidden="true"></span></summary>
+          <div class="faq__a"><p>Si vous annulez moins de 24&nbsp;h avant, 50&nbsp;% du prix de la prestation est dû. Moins de 12&nbsp;h avant, ou en cas d'absence, la totalité du prix est due.</p></div>
+        </details>
+        <details class="faq__item" data-reveal>
+          <summary class="faq__q">Où se trouve le salon ?<span class="faq__icon" aria-hidden="true"></span></summary>
+          <div class="faq__a"><p>Chaussée de Charleroi 45, 1360 Perwez (Brabant wallon). Le salon est accessible par l'autoroute E411 et en bus TEC, et vous pouvez vous garer devant la vitrine. <a class="link-underline" href="#infos">Voir la carte</a>.</p></div>
+        </details>
+      </div>
+    </section>
+
     <!-- ===== BOOKING CTA ===== -->
     <section class="book" id="book">
       <div class="book__inner">
@@ -458,20 +676,20 @@
       </div>
 
       <div class="footer__col">
-        <h4>Contact</h4>
+        <h3 class="footer__h">Contact</h3>
         <a class="link-underline" data-cursor href="mailto:54cutz@gmail.com">54cutz@gmail.com</a>
         <address>Chaussée de Charleroi 45<br />1360 Perwez, Belgique</address>
       </div>
 
       <div class="footer__col">
-        <h4>Suivez-nous</h4>
+        <h3 class="footer__h">Suivez-nous</h3>
         <a class="link-underline" data-cursor href="https://instagram.com/54cutz_" target="_blank" rel="noopener">Instagram @54cutz_</a>
         <a class="link-underline" data-cursor href="https://tiktok.com/@54cutz_" target="_blank" rel="noopener">TikTok @54cutz_</a>
         <a class="link-underline" data-cursor href="https://www.facebook.com/p/54cutz-61567134172609/" target="_blank" rel="noopener">Facebook</a>
       </div>
 
       <div class="footer__col">
-        <h4>Réserver</h4>
+        <h3 class="footer__h">Réserver</h3>
         <a class="link-underline" data-cursor href="https://salonkee.be/salon/54-cutz?lang=fr" target="_blank" rel="noopener">Salonkee →</a>
       </div>
     </div>

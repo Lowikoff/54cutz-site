@@ -58,9 +58,24 @@ Sert le site comme Cloudflare (adresses sans .html, redirections 301, page 404).
 - [ ] **Sur un vrai téléphone** (iPhone Safari) : bouton Réserver flottant et menu (testé seulement en simulation).
 - [x] **Infos vérifiées sur Salonkee le 26/11/2026** : horaires, 4 barbers, prix par barber, politique d'annulation identiques au site. ✔ Durées (pas affichées sur le site) : Ismaël & Wyatt coupe 30 min, coupe + barbe 45 min, V.I.P 1 h, transformation 45 min (Ismaël : 45 min–1 h), barbe 15 min ; Raphaël coupe 45 min, coupe + barbe 1 h, barbe 30 min ; Bastien coupe 30 min, coupe + barbe 45 min.
 - [x] **N° d'entreprise corrigé** (26/11/2026) : l'ancien n° BE 0803.277.289 (Ismaël Alaoui, personne physique) est arrêté depuis le 01/01/2026 (BCE). Nouveau : **54 CUTZ SRL, BE 1031.637.857** (Salonkee + BCE). Mis à jour dans le footer des 3 pages, les mentions légales, la politique de confidentialité et le JSON-LD (`legalName`, `vatID`). ✔
-- [x] **Animations des images sur mobile** (26/11/2026) : parallaxe retiré des photos de l'équipe (zoom fixe 1.08), parallaxe du hero seulement à la souris, survols (`.member`, `.gallery__item`) et transitions de filtre réservés à `(hover: hover) and (pointer: fine)`, apparitions plus courtes au tactile (20 px, .6 s) avec `will-change` posé puis retiré. Testé en WebKit + Chromium à 375 px (tactile) et 1280 px (souris) en défilant toute la page. ✔
+- [x] **Animations des images** (26/11/2026, refait) : parallaxe du hero et des photos de l'équipe remis, au tactile aussi, construit en couches : cadre fixe (`overflow: hidden`) → couche zoom (dézoom au survol, souris seulement) → image animée par GSAP (`yPercent -8 → 8`, `scrub`, aucune transition CSS sur son transform). Les marges sont calculées dans `styles.css` (image équipe 124 % du cadre, hero −20 % / −4 %) : aucun bord ne se découvre. Tous les survols du site sont sous `@media (hover: hover) and (pointer: fine)` (rien de collé au tactile, `.service` compris) ; boutons : `scale(.97)` au tap. Apparitions plus courtes au tactile (20 px, .6 s), `will-change` posé puis retiré. Testé en WebKit + Chromium, 375 px (tactile) et 1280 px (souris) : 35 arrêts sur toute la page, rien ne bouge après l'arrêt, la photo suit le scroll, marge minimale ≥ 10 px entre image et cadre à chaque pas de 50 px. ✔
+- [x] **SEO sur la page** (26/11/2026) : title « Barber à Perwez, Brabant wallon | Barbier 54cutz » (48 car.), description 149 car., meta keywords retirée ; H1 « Barber à Perwez » (même visuel, mêmes animations) ; texte « Votre barbier à Perwez, en Brabant wallon » sous le statement ; FAQ (5 questions) + JSON-LD `FAQPage` ; photos du hero, de l'équipe et de la galerie en `<img>` avec width/height, alt décrivant la photo, `loading="lazy"` sauf le hero. Sur téléphone en portrait, le hero charge `gallery14-portrait.webp` (recadrage central, 56 Ko au lieu de 265 Ko, rendu identique). ✔
+- [x] **Lighthouse mobile** (local, 26/11/2026) : Performance 93–94, Accessibilité 96 (100 sans le noindex), Bonnes pratiques 100, SEO 69 avec le noindex de la démo → **100** sur une copie sans noindex. ✔
 - [ ] **Animations sur un vrai iPhone** : vérifier le défilement (photos équipe, galerie, hero) et la barre d'adresse de Safari qui se replie.
 - [x] **Horaires** : ligne du jour en magenta + « Aujourd'hui », badge « Ouvert maintenant · jusqu'à 20h » / « Fermé · ouvre mardi à 10h » (heure de Bruxelles, mis à jour chaque minute, caché sans JS). Horaires définis une fois dans `HOURS` (`script.js`) : si les horaires changent, modifier `HOURS`, la liste `.hours__list` et le JSON-LD. ✔
+
+## Démo : indexation bloquée (en attente de validation par Isma)
+Le site est redevenu une démo le 26/11/2026 : Google ne doit pas l'indexer tant qu'Isma n'a pas validé. Pas de bandeau « maquette ».
+- `<meta name="robots" content="noindex, nofollow">` sur `index.html`, les 2 pages légales et `404.html`.
+- `_headers` : `X-Robots-Tag: noindex, nofollow` sur toutes les adresses.
+- `robots.txt` : `Disallow: /`.
+
+**Le jour où il valide, tout retirer :**
+- [ ] Supprimer `_headers`.
+- [ ] `robots.txt` : remettre `User-agent: *`, `Allow: /`, `Sitemap: https://54cutz.be/sitemap.xml`.
+- [ ] `index.html` : `<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">`.
+- [ ] Pages légales et `404.html` : `<meta name="robots" content="noindex, follow">` (elles restent hors index).
+- [ ] Mettre à jour `<lastmod>` du sitemap, publier, puis vérifier en ligne qu'il n'y a plus d'en-tête `X-Robots-Tag` et soumettre le sitemap dans Search Console.
 
 ## Pages légales (Belgique)
 - `mentions-legales.html` — éditeur, BCE/TVA, hébergeur, propriété intellectuelle, droit belge (Livre XII Code de droit économique).
@@ -71,8 +86,8 @@ Sert le site comme Cloudflare (adresses sans .html, redirections 301, page 404).
 - [x] Hébergeur des mentions légales et sous-traitants RGPD passés à Cloudflare. ✔
 
 ## SEO (domaine cible : 54cutz.be)
-- **Données structurées** JSON-LD `HairSalon` : NAP, géo, horaires, 5 prestations + prix, 4 barbers, réseaux (`sameAs`), action de réservation Salonkee.
-- **Méta** : title/description orientés local ("barbier Perwez"), balises `geo.*`/`ICBM`, Open Graph + Twitter Card, `canonical` → `https://54cutz.be/`.
+- **Données structurées** JSON-LD (`@graph`) : `HairSalon` (NAP, géo, horaires, 5 prestations + prix « dès », 4 barbers, `legalName` 54 CUTZ SRL + `vatID`, réseaux `sameAs`, `areaServed`, réservation Salonkee, `subjectOf` → FAQ) + `FAQPage` (mêmes 5 questions que la FAQ visible : les garder identiques). Google n'affiche plus les FAQ en résultat enrichi pour les commerces, mais le balisage reste valide et utile. `paymentAccepted` retiré (non vérifié).
+- **Méta** : title/description sur « barber / barbier à Perwez, Brabant wallon », balises `geo.*`/`ICBM`, Open Graph + Twitter Card, `canonical` → `https://54cutz.be/`. Plus de meta keywords (ignorée par Google).
 - `sitemap.xml` (avec image) + `robots.txt`.
 - NAP cohérent partout : **Salon 54cutz · Chaussée de Charleroi 45, 1360 Perwez · 54cutz@gmail.com**.
 - Pas de note/avis dans le schema (Google pénalise les `aggregateRating` non vérifiables on-page) ni de téléphone (le salon ne répond pas aux appels → contact via réseaux/Salonkee).
@@ -82,6 +97,15 @@ Sert le site comme Cloudflare (adresses sans .html, redirections 301, page 404).
 - [ ] Mettre l'URL `https://54cutz.be` sur la fiche **Google Business Profile** et les réseaux.
 - [ ] Soumettre `https://54cutz.be/sitemap.xml` dans **Google Search Console**.
 - [ ] Vérifier le rendu avec le test des résultats enrichis Google (Rich Results Test).
+
+## SEO hors site, à faire avec le client
+- [ ] **Fiche Google Business Profile** : catégorie principale « Barbier » (secondaire « Salon de coiffure pour hommes » si proposée), horaires identiques au site, photos récentes (salon, équipe, réalisations), lien du site (`https://54cutz.be`) et lien de réservation Salonkee, répondre à chaque avis (positif comme négatif).
+- [ ] **Avis Google** : demander aux clients satisfaits de laisser un avis (lien court de la fiche, QR code au comptoir). Jamais d'avis achetés ni recopiés de Salonkee.
+- [ ] **Fiche Planity** : téléphone et horaires différents du site → la corriger ou la faire supprimer (des infos contradictoires brouillent Google).
+- [ ] **Lien du site partout** : Salonkee (fiche du salon), bio Instagram, TikTok, page Facebook.
+- [ ] **Pages d'Or** (pagesdor.be) : créer ou corriger la fiche avec le même nom, la même adresse et le même e-mail (NAP identique partout).
+- [ ] **Google Search Console** : valider le domaine, soumettre `https://54cutz.be/sitemap.xml` (après la levée du noindex), surveiller l'indexation et les requêtes « barber Perwez », « barbier Perwez ».
+- [ ] **54cutz.com ou 54cutz.be** : 54cutz.com est le domaine historique (déjà connu de Google, liens existants) mais il est chez l'agence Pixl. Si le client peut le récupérer, le garder comme adresse principale ou le rediriger en 301 vers 54cutz.be pour ne pas perdre son ancienneté ; sinon, 54cutz.be seul et mettre à jour tous les liens. À décider avec lui.
 
 ## Tarifs intégrés (selon Salonkee)
 | Prestation | Ismaël & Wyatt | Raphaël | Bastien |
@@ -102,6 +126,8 @@ horaires, adresse, email, conditions d'annulation, TVA, bios Ismaël & Wyatt.
 - Testé avec `npx wrangler dev`, Chromium + WebKit, 375 et 1280 px, horloge simulée (visiteur à New York / Tokyo) : mardi 11h, mardi 21h, samedi 14h30, lundi, dimanche 16h, mercredi 8h, passage de 15h et de minuit, sans JS.
 
 - Images au défilement sur mobile : plus de glissement après l'arrêt du scroll ni de bande sombre en haut des photos de l'équipe, plus de survol « collé » après un tap (détail dans la checklist).
+
+- SEO local (title, description, H1, texte, FAQ + `FAQPage`, `<img>` avec alt), parallaxe reconstruit en couches, survols réservés à la souris, démo protégée de l'indexation (noindex + `X-Robots-Tag` + robots.txt).
 
 ## Améliorations du 26/11/2026
 - Images optimisées : logo 500 Ko → 40 Ko, photos utilisées environ 3 Mo → 1 Mo (mêmes noms de fichiers).
@@ -126,4 +152,6 @@ horaires, adresse, email, conditions d'annulation, TVA, bios Ismaël & Wyatt.
 - [ ] Stat « 100 % sens du détail » : ce n'est pas un vrai chiffre. Garder ou remplacer (ex. années d'ouverture du salon) ?
 - [ ] Fiche Planity : téléphone et horaires différents (lun–sam 9h–18h) → la mettre à jour ou la supprimer.
 - [ ] Lien de la fiche Google (pour un bouton « Avis Google »).
+- [ ] Moyens de paiement acceptés (espèces, carte, Bancontact, paiement mobile ?) : info absente de Salonkee et de 54cutz.com, donc pas dans la FAQ ni le JSON-LD. Le parking devant la vitrine est confirmé (Salonkee + 54cutz.com) et figure dans la FAQ.
+- [ ] Texte SEO : « Perwez se trouve entre Gembloux, Jodoigne et Eghezée » — le client est-il d'accord pour citer ces communes ?
 - [ ] Domaine 54cutz.be : qui l'achète, à quel nom. Et 54cutz.com (agence Pixl) : qui détient le domaine ?

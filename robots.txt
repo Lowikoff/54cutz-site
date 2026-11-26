@@ -1,4 +1,7 @@
+# Démo : indexation bloquée tant que le client n'a pas validé le site (voir README).
+# Le jour de la validation, remettre :
+#   User-agent: *
+#   Allow: /
+#   Sitemap: https://54cutz.be/sitemap.xml
 User-agent: *
-Allow: /
-
-Sitemap: https://54cutz.be/sitemap.xml
+Disallow: /

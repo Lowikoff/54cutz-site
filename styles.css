@@ -1,4 +1,16 @@
 /* ============================================================
+   POLICES — hébergées sur le site (assets/fonts), aucun appel externe
+   ============================================================ */
+@font-face { font-family: "Anton"; src: url("assets/fonts/anton-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Bebas Neue"; src: url("assets/fonts/bebas-neue-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Inter"; src: url("assets/fonts/inter-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Inter"; src: url("assets/fonts/inter-latin-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "Inter"; src: url("assets/fonts/inter-latin-600-normal.woff2") format("woff2"); font-weight: 600 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "Fraunces"; src: url("assets/fonts/fraunces-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Fraunces"; src: url("assets/fonts/fraunces-latin-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "Fraunces"; src: url("assets/fonts/fraunces-latin-400-italic.woff2") format("woff2"); font-weight: 400 500; font-style: italic; font-display: swap; }
+
+/* ============================================================
    54CUTZ — modern barbershop refonte
    Palette: noir profond · or chaud · crème
    ============================================================ */
@@ -493,7 +505,8 @@ ul { list-style: none; }
   background: linear-gradient(to top, rgba(10,9,8,0.95) 20%, transparent);
 }
 .member__name { font-family: var(--ff-display); font-size: clamp(2rem, 5vw, 3.2rem); text-transform: uppercase; line-height: 1; }
-.member__handle { color: var(--gold); font-size: .82rem; letter-spacing: .12em; }
+.member__handle { display: inline-block; color: var(--gold); font-size: .82rem; letter-spacing: .12em; transition: color .3s var(--ease); }
+a.member__handle:hover { color: var(--cream); }
 .member__bio { margin-top: .9rem; color: var(--cream-d); font-size: .95rem; max-width: 40ch; }
 
 /* ============================================================
@@ -546,6 +559,24 @@ ul { list-style: none; }
 .address address { color: var(--cream-d); margin: .6rem 0 1rem; font-style: normal; line-height: 1.7; }
 .map { aspect-ratio: 4/3; border-radius: 6px; overflow: hidden; border: 1px solid var(--line); }
 .map iframe { width: 100%; height: 100%; border: 0; filter: grayscale(0.6) invert(0.92) contrast(0.85); }
+/* carte chargée au clic (RGPD) */
+.map__load {
+  width: 100%; height: 100%; border: 0; cursor: pointer;
+  display: grid; place-content: center; justify-items: center; gap: .6rem; padding: 1.5rem;
+  color: var(--cream); font: inherit; text-align: center;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(255,45,143,0.18), transparent 55%),
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.04) 0 1px, transparent 1px 48px),
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.04) 0 1px, transparent 1px 48px),
+    var(--char);
+  transition: background-color .4s var(--ease);
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+}
+.map__pin { color: var(--magenta); font-size: 1.6rem; line-height: 1; text-shadow: 0 0 18px rgba(255,45,143,0.8); }
+.map__label { font-family: var(--ff-cond); font-size: 1.5rem; letter-spacing: .08em; }
+.map__note { font-size: .78rem; color: var(--cream-d); max-width: 30ch; }
+.map__load:hover .map__label, .map__load:focus-visible .map__label { color: var(--magenta); }
+.map__load:active { transform: scale(.99); }
 
 /* ============================================================
    BOOK CTA
@@ -761,3 +792,26 @@ body.legal-page { cursor: auto; }
     transition: opacity .5s ease !important;
   }
 }
+
+/* ============================================================
+   BOUTON RÉSERVER FLOTTANT (mobile uniquement)
+   ============================================================ */
+.book-fab { display: none; }
+@media (max-width: 760px) {
+  .book-fab {
+    display: inline-flex; align-items: center; justify-content: center;
+    position: fixed; z-index: 80; left: 50%;
+    bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+    padding: .95rem 2.2rem; border-radius: 99px;
+    background: var(--neon); color: #fff;
+    font-weight: 600; font-size: .85rem; letter-spacing: .12em; text-transform: uppercase;
+    box-shadow: 0 0 0 1px rgba(255,45,143,0.5), 0 10px 30px -8px rgba(255,45,143,0.7);
+    transform: translate3d(-50%, 140%, 0); opacity: 0; pointer-events: none;
+    transition: transform .5s var(--ease), opacity .35s ease;
+    -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+  }
+  .book-fab.is-visible { transform: translate3d(-50%, 0, 0); opacity: 1; pointer-events: auto; }
+  .book-fab:active { transform: translate3d(-50%, 0, 0) scale(.97); }
+  .footer { padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px)); }
+}
+@media (prefers-reduced-motion: reduce) { .book-fab { transition: opacity .2s ease; } }

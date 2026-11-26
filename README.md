@@ -6,23 +6,17 @@ animations au scroll, design noir/or éditorial.
 ## Lancer en local
 ```bash
 cd site-54cutz
-python3 -m http.server 8000
-# ouvrir http://localhost:8000
+npx wrangler dev
+# ouvrir http://localhost:8787
 ```
-Ou double-clic sur `index.html`.
+Sert le site comme Cloudflare (adresses sans .html, redirections 301, page 404). Live Server et `python3 -m http.server` ne gèrent pas `/mentions-legales`.
 
-## Mettre en ligne (GitHub Pages)
-1. GitHub → repo **54cutz-site** → **Settings** → **Pages**.
-2. *Build and deployment* → *Source* : **Deploy from a branch**.
-3. *Branch* : **main** / dossier **/ (root)** → **Save**.
-4. Attendre ~1 min. URL publique : **https://lowikoff.github.io/54cutz-site/**
-
-### Plus tard : domaine 54cutz.be
-- Recréer un fichier `CNAME` à la racine contenant `54cutz.be`.
-- Chez le registrar du domaine, ajouter les DNS GitHub Pages :
-  - 4 enregistrements **A** vers `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`
-  - (ou un **CNAME** `www` → `lowikoff.github.io`)
-- Settings → Pages → *Custom domain* : `54cutz.be` → cocher *Enforce HTTPS*.
+## Mise en ligne (Cloudflare)
+- Projet Cloudflare `54cutz-site` (Workers, fichiers statiques) — config dans `wrangler.jsonc`, fichiers exclus dans `.assetsignore`, redirections 301 dans `_redirects`, page `404.html`.
+- Workers Builds relié au dépôt GitHub `Lowikoff/54cutz-site` : chaque push sur `main` publie le site.
+- Domaine `54cutz.be` : ajouté à Cloudflare (serveurs de noms changés chez le registrar), puis rattaché au Worker (Domaines personnalisés : `54cutz.be` + `www.54cutz.be`).
+- Une fois en ligne sur Cloudflare : désactiver GitHub Pages (Settings → Pages), pour éviter un doublon de site.
+- Test local : `npx wrangler dev`.
 
 ## Identité visuelle
 - **Palette dérivée du logo + de l'enseigne néon** du salon : base noir/blanc monochrome
@@ -31,8 +25,9 @@ Ou double-clic sur `index.html`.
 - **Logo** (`assets/logo.png`) utilisé dans le loader, la nav, le footer + favicon.
 
 ## Stack
-- HTML / CSS / JS purs — zéro build, hébergeable partout (Netlify, Vercel, OVH, GitHub Pages).
-- [GSAP + ScrollTrigger](https://gsap.com) via CDN → parallaxe + révélation de texte.
+- HTML / CSS / JS purs — zéro build, hébergé sur Cloudflare.
+- [GSAP + ScrollTrigger](https://gsap.com) hébergés dans `assets/js/` → parallaxe + révélation de texte.
+- Polices (Anton, Bebas Neue, Inter, Fraunces) hébergées dans `assets/fonts/` : aucun appel à Google Fonts.
 - Animations natives : loader, curseur custom, marquee, compteurs, glow néon, reveal.
 - Accessible : respecte `prefers-reduced-motion`.
 
@@ -53,23 +48,25 @@ Ou double-clic sur `index.html`.
 - [x] **Tarifs** — prix réels intégrés : section services en « dès » (prix mini) + table **Tarifs par barber** (Ismaël & Wyatt / Raphaël / Bastien). ✔
 - [x] **Lien Salonkee** — `https://salonkee.be/salon/54-cutz?lang=fr` (section `#book` + footer). ✔
 - [ ] **Photos Raphaël & Bastien** — cartes équipe en placeholder néon (initiale R / B). Ajouter leurs portraits comme `assets/images/raphael.jpg` / `bastien.jpg` puis remplacer le bloc `.member--ph` dans `index.html`.
-- [ ] **Handles réseaux** — vérifier `@54cutz_` (Insta/TikTok), `@w9cutzz` (Wyatt), `@menjoucutz` (Raphaël), `@sneizycutz` (Bastien).
+- [ ] **Handles réseaux** — vérifier `@54cutz_` (Insta/TikTok, aussi celui d'Ismaël), `@w9cutzz` (Wyatt), `@menjoucutz` (Raphaël), `@sneizycutz` (Bastien). Les handles de l'équipe sont maintenant cliquables.
 - [ ] **Carte** — pré-réglée "Chau. de Charleroi 45, 1360 Perwez". Vérifier le pin.
 - [ ] **Photos galerie** — sélection actuelle modifiable (13 dispo dans `assets/images/`).
 - [x] Footer : mention "proposition de refonte" remplacée par les liens légaux. ✔
+- [ ] **Après la publication** : vérifier sur l'adresse Cloudflare que `/README.md`, `/CLAUDE.md` et `/wrangler.jsonc` renvoient 404, et que `/mentions-legales.html` redirige en 301.
+- [ ] **Sur un vrai téléphone** (iPhone Safari) : bouton Réserver flottant et menu (testé seulement en simulation).
 
 ## Pages légales (Belgique)
 - `mentions-legales.html` — éditeur, BCE/TVA, hébergeur, propriété intellectuelle, droit belge (Livre XII Code de droit économique).
-- `politique-confidentialite.html` — RGPD : données, finalités, bases légales, sous-traitants (Salonkee/GitHub/Google), cookies, conservation, droits, réclamation APD.
+- `politique-confidentialite.html` — RGPD : données, finalités, bases légales, sous-traitants (Salonkee/Cloudflare/Google Maps au clic), cookies, conservation, droits, réclamation APD.
 - Liées dans le footer du site + entre elles. En `noindex` (volontairement hors sitemap).
 - ⚠️ **Modèles** rédigés selon le droit belge/RGPD à partir des infos connues — à faire relire par un professionnel avant usage définitif.
 - [ ] Vérifier le **nom légal exact** et la forme juridique (personne physique / société) auprès de la BCE.
-- [ ] Adapter l'**hébergeur** dans les mentions légales si différent de GitHub Pages.
+- [x] Hébergeur des mentions légales et sous-traitants RGPD passés à Cloudflare. ✔
 
 ## SEO (domaine cible : 54cutz.be)
 - **Données structurées** JSON-LD `HairSalon` : NAP, géo, horaires, 5 prestations + prix, 4 barbers, réseaux (`sameAs`), action de réservation Salonkee.
 - **Méta** : title/description orientés local ("barbier Perwez"), balises `geo.*`/`ICBM`, Open Graph + Twitter Card, `canonical` → `https://54cutz.be/`.
-- `sitemap.xml` (avec image) + `robots.txt` + `CNAME` (`54cutz.be`) pour GitHub Pages.
+- `sitemap.xml` (avec image) + `robots.txt`.
 - NAP cohérent partout : **Salon 54cutz · Chaussée de Charleroi 45, 1360 Perwez · 54cutz@gmail.com**.
 - Pas de note/avis dans le schema (Google pénalise les `aggregateRating` non vérifiables on-page) ni de téléphone (le salon ne répond pas aux appels → contact via réseaux/Salonkee).
 
@@ -91,3 +88,24 @@ Ou double-clic sur `index.html`.
 ## Contenu repris du site actuel
 Nom, baseline, services (Coupe / Barbe / Coupe+Barbe / Transformation / V.I.P),
 horaires, adresse, email, conditions d'annulation, TVA, bios Ismaël & Wyatt.
+
+## Améliorations du 26/11/2026
+- Images optimisées : logo 500 Ko → 40 Ko, photos utilisées environ 3 Mo → 1 Mo (mêmes noms de fichiers).
+- Loader : retiré au plus tard après 2,5 s (avant, il attendait le chargement de toutes les images).
+- Polices et GSAP hébergés sur le site ; image du hero préchargée.
+- Carte Google Maps chargée au clic (RGPD) ; politique de confidentialité mise à jour.
+- Bouton « Réserver » flottant sur mobile (après le hero, caché sur la section Réserver et quand le menu est ouvert).
+- Handles de l'équipe cliquables ; Ismaël `@54cutz` corrigé en `@54cutz_`.
+- Accessibilité : portraits et photos de la galerie décrits pour les lecteurs d'écran.
+- JSON-LD : lien Planity retiré (fiche non réservable, avec un téléphone et des horaires différents du site).
+- Page 404, `_redirects` (adresses sans .html), `wrangler.jsonc`, `.assetsignore`.
+- Curseur personnalisé (ordinateur) : caché jusqu'au premier mouvement de souris (il apparaissait dans le coin haut-gauche).
+- Testé avec `npx wrangler dev` dans Chromium et WebKit, à 375 px et 1280 px : loader, menu mobile, bouton Réserver flottant, carte au clic, pages légales, 404, redirection `/mentions-legales.html` → `/mentions-legales`. Les fichiers de travail (`README.md`, `CLAUDE.md`, `wrangler.jsonc`…) renvoient bien 404.
+
+## À confirmer avec le client
+- [ ] Hero : « Nous sommes Ismaël & Wyatt » alors que l'équipe compte 4 barbers. Garder, ou citer les 4 ?
+- [ ] Bio de Wyatt : « depuis plus d'un an, j'ai 18 ans » (texte de l'ancien site) — encore exact ?
+- [ ] Stat « 100 % sens du détail » : ce n'est pas un vrai chiffre. Garder ou remplacer (ex. années d'ouverture du salon) ?
+- [ ] Fiche Planity : téléphone et horaires différents (lun–sam 9h–18h) → la mettre à jour ou la supprimer.
+- [ ] Lien de la fiche Google (pour un bouton « Avis Google »).
+- [ ] Domaine 54cutz.be : qui l'achète, à quel nom. Et 54cutz.com (agence Pixl) : qui détient le domaine ?

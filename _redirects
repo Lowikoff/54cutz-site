@@ -1,0 +1,6 @@
+# Cloudflare — redirections permanentes (301)
+# Adresses officielles = sans .html. Sans ces lignes, Cloudflare fait une
+# redirection temporaire (307) et Google indexe mal les pages (vu sur amautraining.be).
+/index.html                       /                           301
+/mentions-legales.html            /mentions-legales           301
+/politique-confidentialite.html   /politique-confidentialite  301

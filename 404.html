@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fr-BE">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Page introuvable — Salon 54cutz | Barbier à Perwez</title>
+  <meta name="robots" content="noindex, follow" />
+  <meta name="theme-color" content="#08080a" />
+  <link rel="icon" href="/assets/favicon.ico" sizes="any" />
+  <link rel="preload" href="/assets/fonts/anton-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="/styles.css" />
+  <style>
+    .notfound { min-height: 100dvh; display: grid; place-content: center; justify-items: center; gap: 1.4rem; padding: 2rem var(--pad); text-align: center; }
+    .notfound__logo { width: min(55vw, 240px); height: auto; filter: drop-shadow(0 0 18px rgba(255,45,143,0.45)); }
+    .notfound__code { font-family: var(--ff-display); font-size: clamp(5rem, 22vw, 9rem); line-height: 1; background: var(--neon); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .notfound__text { color: var(--cream-d); max-width: 36ch; }
+    .notfound__actions { display: flex; flex-wrap: wrap; gap: .8rem; justify-content: center; margin-top: .6rem; }
+  </style>
+</head>
+<body class="legal-page">
+  <main class="notfound">
+    <a href="/" aria-label="54cutz — accueil"><img class="notfound__logo" src="/assets/logo.png" alt="54cutz" /></a>
+    <p class="notfound__code">404</p>
+    <h1 class="legal__title" style="margin:0;">Page introuvable</h1>
+    <p class="notfound__text">Cette page n'existe pas ou a été déplacée. Votre prochaine coupe, elle, vous attend.</p>
+    <div class="notfound__actions">
+      <a href="/" class="btn btn--ghost">Retour à l'accueil</a>
+      <a href="https://salonkee.be/salon/54-cutz?lang=fr" target="_blank" rel="noopener" class="btn btn--gold">Réserver via Salonkee</a>
+    </div>
+  </main>
+</body>
+</html>

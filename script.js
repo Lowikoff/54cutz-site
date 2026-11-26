@@ -11,14 +11,24 @@
   document.getElementById("year").textContent = new Date().getFullYear();
 
   /* ---------- loader ---------- */
+  // Le loader se retire dès que la page est chargée (au moins 1,3 s pour
+  // l'animation du logo), et au plus tard après 2,5 s même si une image
+  // traîne sur un réseau lent : on ne bloque jamais la page plus longtemps.
   const loader = document.getElementById("loader");
+  const t0 = performance.now();
+  let loaderDone = false;
+  const finishLoader = () => {
+    if (loaderDone) return;
+    loaderDone = true;
+    loader.classList.add("is-done");
+    document.body.classList.add("loaded");
+    playHero();
+  };
   window.addEventListener("load", () => {
-    setTimeout(() => {
-      loader.classList.add("is-done");
-      document.body.classList.add("loaded");
-      playHero();
-    }, reduce ? 0 : 1300);
+    const wait = reduce ? 0 : Math.max(0, 1300 - (performance.now() - t0));
+    setTimeout(finishLoader, wait);
   });
+  setTimeout(finishLoader, reduce ? 300 : 2500);
 
   /* ---------- hero text reveal ---------- */
   function playHero() {
@@ -147,9 +157,12 @@
   const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
   if (fine && cursor && dot) {
-    let mx = 0, my = 0, cx = 0, cy = 0;
+    // caché tant que la souris n'a pas bougé (sinon il apparaît dans le coin haut-gauche)
+    let mx = 0, my = 0, cx = 0, cy = 0, seen = false;
+    cursor.style.opacity = 0; dot.style.opacity = 0;
     window.addEventListener("mousemove", (e) => {
       mx = e.clientX; my = e.clientY;
+      if (!seen) { seen = true; cx = mx; cy = my; cursor.style.opacity = 1; dot.style.opacity = 1; }
       dot.style.transform = `translate(${mx}px, ${my}px) translate(-50%, -50%)`;
     });
     const loop = () => {
@@ -165,6 +178,36 @@
     });
     document.addEventListener("mouseleave", () => { cursor.style.opacity = 0; dot.style.opacity = 0; });
     document.addEventListener("mouseenter", () => { cursor.style.opacity = 1; dot.style.opacity = 1; });
+  }
+
+  /* ---------- carte Google Maps chargée au clic (RGPD) ---------- */
+  const mapBtn = document.getElementById("mapLoad");
+  if (mapBtn) {
+    mapBtn.addEventListener("click", () => {
+      const iframe = document.createElement("iframe");
+      iframe.title = "Plan — 54cutz Perwez";
+      iframe.src = mapBtn.dataset.src;
+      iframe.referrerPolicy = "no-referrer-when-downgrade";
+      mapBtn.replaceWith(iframe);
+    });
+  }
+
+  /* ---------- bouton Réserver flottant (mobile) ----------
+     visible après le hero, caché quand la section Réserver est à l'écran
+     ou quand le menu mobile est ouvert */
+  const fab = document.getElementById("bookFab");
+  const heroEl = document.getElementById("hero");
+  const bookEl = document.getElementById("book");
+  if (fab && heroEl && bookEl && "IntersectionObserver" in window) {
+    let pastHero = false, bookVisible = false;
+    const updateFab = () => fab.classList.toggle("is-visible",
+      pastHero && !bookVisible && !nav.classList.contains("is-open"));
+    new IntersectionObserver(([en]) => { pastHero = !en.isIntersecting; updateFab(); },
+      { threshold: 0.15 }).observe(heroEl);
+    new IntersectionObserver(([en]) => { bookVisible = en.isIntersecting; updateFab(); },
+      { threshold: 0.1 }).observe(bookEl);
+    burger.addEventListener("click", updateFab);
+    navLinks.addEventListener("click", () => setTimeout(updateFab, 0));
   }
 
   /* ---------- active nav link on scroll ---------- */

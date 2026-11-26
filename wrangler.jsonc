@@ -1,0 +1,13 @@
+// Configuration Cloudflare (Workers Builds lance `npx wrangler deploy` à chaque push sur main).
+// Site statique servi depuis la racine du dépôt. Les fichiers à NE PAS publier
+// sont listés dans .assetsignore.
+// Ne jamais changer "name" : sinon Cloudflare crée un deuxième projet.
+{
+  "name": "54cutz-site",
+  "compatibility_date": "2025-11-01",
+  "assets": {
+    "directory": ".",
+    "not_found_handling": "404-page"
+  },
+  "preview_urls": false
+}

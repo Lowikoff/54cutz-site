@@ -15,7 +15,7 @@ Sert le site comme Cloudflare (adresses sans .html, redirections 301, page 404).
 - Projet Cloudflare `54cutz-site` (Workers, fichiers statiques) — config dans `wrangler.jsonc`, fichiers exclus dans `.assetsignore`, redirections 301 dans `_redirects`, page `404.html`.
 - Publication depuis le Mac : `npx wrangler deploy` (le push GitHub sert seulement d'historique, il ne publie rien).
 - Domaine `54cutz.be` : ajouté à Cloudflare (serveurs de noms changés chez le registrar), puis rattaché au Worker (Domaines personnalisés : `54cutz.be` + `www.54cutz.be`).
-- Une fois en ligne sur Cloudflare : désactiver GitHub Pages (Settings → Pages), pour éviter un doublon de site.
+- GitHub Pages désactivé (26/11/2026) : le site n'est servi que par Cloudflare.
 - Test local : `npx wrangler dev`.
 
 ## Identité visuelle
@@ -52,8 +52,9 @@ Sert le site comme Cloudflare (adresses sans .html, redirections 301, page 404).
 - [ ] **Carte** — pré-réglée "Chau. de Charleroi 45, 1360 Perwez". Vérifier le pin.
 - [ ] **Photos galerie** — sélection actuelle modifiable (13 dispo dans `assets/images/`).
 - [x] Footer : mention "proposition de refonte" remplacée par les liens légaux. ✔
-- [ ] **Brancher Cloudflare** : le Worker `54cutz-site` n'existe pas encore sur le compte Cloudflare (vérifié le 26/11/2026). Créer le Worker avec un premier `npx wrangler deploy` depuis le Mac, puis ajouter les domaines 54cutz.be et www. En attendant, le push publie seulement la copie GitHub Pages, où les liens `/mentions-legales` du pied de page mènent à une 404 (le site y est servi sous `/54cutz-site/`).
-- [ ] **Après la publication** : vérifier sur l'adresse Cloudflare que `/README.md`, `/CLAUDE.md` et `/wrangler.jsonc` renvoient 404, et que `/mentions-legales.html` redirige en 301.
+- [x] **Cloudflare** : Worker `54cutz-site` créé par `npx wrangler deploy` le 26/11/2026, en ligne sur https://54cutz-site.loic-web.workers.dev. GitHub Pages désactivé le même jour. ✔
+- [ ] **Domaine** : 54cutz.be libre au 26/11/2026 (whois DNS Belgium). À acheter, ajouter à Cloudflare, puis rattacher au Worker (54cutz.be + www).
+- [x] **Contrôles après publication** (workers.dev, 26/11/2026) : pages en 200, anciennes adresses `.html` en 301, 404 propre, `/README.md`, `/CLAUDE.md`, `/wrangler.jsonc`, `/.git/`, `/.claude/` en 404. ✔
 - [ ] **Sur un vrai téléphone** (iPhone Safari) : bouton Réserver flottant et menu (testé seulement en simulation).
 
 ## Pages légales (Belgique)

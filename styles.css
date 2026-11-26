@@ -388,6 +388,7 @@ ul { list-style: none; }
 }
 .about__body p { color: var(--cream-d); line-height: 1.75; max-width: 62ch; }
 .about__body p + p { margin-top: 1rem; }
+.about__body strong { color: var(--cream); font-weight: 600; }
 @media (max-width: 760px) { .about { grid-template-columns: minmax(0, 1fr); } }
 
 /* ============================================================

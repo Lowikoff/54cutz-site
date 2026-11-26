@@ -109,6 +109,8 @@
       .map((w) => `<span class="word">${w}</span>`).join(" ");
     if (hasGSAP && !reduce) {
       gsap.registerPlugin(ScrollTrigger);
+      // pas de recalcul quand la barre d'adresse de Safari se replie
+      ScrollTrigger.config({ ignoreMobileResize: true });
       gsap.to(wordEl.querySelectorAll(".word"), {
         opacity: 1, stagger: 0.06, ease: "none",
         scrollTrigger: { trigger: wordEl, start: "top 80%", end: "bottom 60%", scrub: true }

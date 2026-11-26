@@ -153,7 +153,7 @@ horaires, adresse, email, conditions d'annulation, TVA, bios Ismaël & Wyatt.
 - [ ] Fiche Planity : téléphone et horaires différents (lun–sam 9h–18h) → la mettre à jour ou la supprimer.
 - [ ] Lien de la fiche Google (pour un bouton « Avis Google »).
 - [ ] Moyens de paiement acceptés (espèces, carte, Bancontact, paiement mobile ?) : info absente de Salonkee et de 54cutz.com, donc pas dans la FAQ ni le JSON-LD. Le parking devant la vitrine est confirmé (Salonkee + 54cutz.com) et figure dans la FAQ.
-- [ ] Texte SEO : « Perwez se trouve entre Gembloux, Jodoigne et Eghezée » — le client est-il d'accord pour citer ces communes ?
+- [x] Texte de présentation : texte fourni par Loïc le 26/11/2026 (cite Gembloux, Jodoigne et Eghezée).
 - [ ] Domaine 54cutz.be : qui l'achète, à quel nom. Et 54cutz.com (agence Pixl) : qui détient le domaine ?
 
 ## Parallaxe en CSS (26/11/2026, 13h20)
@@ -161,3 +161,8 @@ horaires, adresse, email, conditions d'annulation, TVA, bios Ismaël & Wyatt.
 - `.member` et `.member__photo` passent en `overflow: clip` (avec `hidden` en secours) : `hidden` en faisait des conteneurs de défilement et bloquait l'animation.
 - Navigateurs sans support : images fixes, aucun bug. `prefers-reduced-motion` : pas de parallaxe.
 - Testé avec `npx wrangler dev`, Chromium + WebKit, 375 et 1280 px : 35 arrêts, rien ne bouge après l'arrêt, photos qui suivent le scroll, aucun bord vide (marge min 10 px), hero qui descend avec le scroll, survol souris OK, rien de collé au tap. Publié le 26/11/2026. **À valider sur un vrai iPhone.**
+
+## Texte de présentation (26/11/2026)
+- Texte de la section « Votre barbier à Perwez » remplacé mot pour mot par celui fourni par Loïc (3 paragraphes, première phrase en gras), avec liens Salonkee, Instagram (nouvel onglet) et e-mail.
+- E411 et bus TEC retirés partout (texte, FAQ, JSON-LD) : infos non vérifiées. FAQ « Où se trouve le salon ? » : adresse + stationnement devant la vitrine (confirmé Salonkee + 54cutz.com).
+- `ScrollTrigger.config({ ignoreMobileResize: true })` remis pour le texte du statement (pas de recalcul quand la barre d'adresse de Safari se replie).

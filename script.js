@@ -135,10 +135,10 @@
     const FAQ_EASE = "cubic-bezier(.4,0,.2,1)";
     const FAQ_OPEN_MS = 650;
     const FAQ_CLOSE_MS = 550;
-    // Pendant l'animation, la question est découpée 2 px plus haut (dans le
+    // Pendant l'animation, la question est découpée 4 px plus haut (dans le
     // padding vide) : marge contre le léger décalage entre clip-path et
     // transform dans Safari au moment le plus rapide. Invisible à l'arrêt.
-    const CLIP_PAD = 2;
+    const CLIP_PAD = 4;
     let run = null; // animation en cours : { item, anims, extra, opening, done }
 
     document.querySelector(".faq__list").classList.add("faq-js");

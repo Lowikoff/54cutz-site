@@ -11,9 +11,10 @@
   document.getElementById("year").textContent = new Date().getFullYear();
 
   /* ---------- loader ---------- */
-  // Le loader se retire dès que la page est chargée (au moins 1,3 s pour
-  // l'animation du logo), et au plus tard après 2,5 s même si une image
-  // traîne sur un réseau lent : on ne bloque jamais la page plus longtemps.
+  // Le loader se retire dès que le premier écran est prêt (photo du hero +
+  // polices), au moins 1,3 s pour l'animation du logo, et au plus tard après
+  // 2,5 s même sur un réseau lent. On n'attend pas l'événement « load » : il
+  // attend aussi les photos de l'équipe, plus bas dans la page.
   const loader = document.getElementById("loader");
   const t0 = performance.now();
   let loaderDone = false;
@@ -24,7 +25,10 @@
     document.body.classList.add("loaded");
     playHero();
   };
-  window.addEventListener("load", () => {
+  const heroImg = document.querySelector(".hero__bg-img");
+  const heroReady = !heroImg || heroImg.complete ? Promise.resolve()
+    : new Promise((res) => { heroImg.addEventListener("load", res, { once: true }); heroImg.addEventListener("error", res, { once: true }); });
+  Promise.all([heroReady, document.fonts ? document.fonts.ready : null]).then(() => {
     const wait = reduce ? 0 : Math.max(0, 1300 - (performance.now() - t0));
     setTimeout(finishLoader, wait);
   });
@@ -33,11 +37,18 @@
   /* ---------- pré-décodage des photos (équipe + galerie) ----------
      Sans ça, le navigateur décode ces grandes photos au moment où elles
      entrent à l'écran : à-coup au premier passage (défilement rapide vers
-     une ancre). Après le load, en temps libre, une photo à la fois.
-     La galerie reste en loading="lazy" dans le HTML (rien ne gêne le
-     premier affichage) ; ici on la passe en eager pour la charger puis
-     la décoder en arrière-plan. */
-  window.addEventListener("load", () => {
+     une ancre). Une fois le premier écran affiché (loader retiré + 1,2 s,
+     et après le load), en temps libre, une photo à la fois : rien ne
+     concurrence l'affichage du hero.
+     La galerie reste en loading="lazy" dans le HTML ; ici on la passe en
+     eager pour la charger puis la décoder en arrière-plan. */
+  const afterFirstScreen = (fn) => {
+    const go = () => setTimeout(fn, 1200);
+    const wait = () => (loaderDone ? go() : setTimeout(wait, 100));
+    if (document.readyState === "complete") wait();
+    else window.addEventListener("load", wait, { once: true });
+  };
+  afterFirstScreen(() => {
     const idle = window.requestIdleCallback
       ? (fn) => requestIdleCallback(fn, { timeout: 2000 })
       : (fn) => setTimeout(fn, 200);
@@ -50,7 +61,7 @@
       p.catch(() => {}).then(() => idle(next));
     };
     idle(next);
-  }, { once: true });
+  });
 
   /* ---------- hero text reveal ---------- */
   function playHero() {
@@ -512,5 +523,355 @@
       });
     }, { threshold: 0.5 });
     sections.forEach((s) => sio.observe(s));
+  }
+  /* ---------- galerie : visionneuse plein écran ----------
+     JS vanilla. Ouverture : la photo grandit depuis sa miniature (FLIP :
+     transform + clip-path, la miniature étant recadrée en object-fit: cover),
+     fermeture : elle y retourne. Navigation : flèches et ← → Échap ; au
+     doigt : glisser gauche/droite, glisser vers le bas pour fermer, pincer
+     ou double-tap pour zoomer. Focus piégé dans la boîte de dialogue, page
+     derrière inerte et bloquée, focus rendu à la miniature à la fermeture.
+     prefers-reduced-motion : simple fondu. Sans JS : le lien ouvre la photo. */
+  const lb = document.getElementById("lightbox");
+  const thumbs = [...document.querySelectorAll(".gallery__item")];
+  if (lb && thumbs.length) {
+    const stage = lb.querySelector(".lb__stage");
+    const bg = lb.querySelector(".lb__bg");
+    const ui = [...lb.querySelectorAll(".lb__count, .lb__caption, .lb__btn")];
+    const curEl = lb.querySelector(".lb__current");
+    const capEl = lb.querySelector(".lb__caption");
+    const btnClose = lb.querySelector(".lb__close");
+    const btnPrev = lb.querySelector(".lb__prev");
+    const btnNext = lb.querySelector(".lb__next");
+    lb.querySelector(".lb__total").textContent = thumbs.length;
+
+    const EASE = "cubic-bezier(.32,.72,0,1)"; // courbe type iOS, douce à l'arrivée
+    const GAP = 24;                           // espace entre deux photos pendant le glissé
+    const MAX_ZOOM = 4;
+    let order = thumbs, idx = 0, open = false, busy = false, lastFocus = null;
+    let W = 0, H = 0;
+
+    // 3 emplacements : photo précédente, actuelle, suivante
+    const slides = [0, 1, 2].map(() => {
+      const s = document.createElement("div"); s.className = "lb__slide";
+      const z = document.createElement("div"); z.className = "lb__zoom";
+      const img = document.createElement("img"); img.className = "lb__img"; img.alt = ""; img.draggable = false;
+      img.decoding = "async";
+      z.append(img); s.append(z); stage.append(s);
+      return { s, z, img, i: -1, rect: null };
+    });
+    let [sPrev, sCur, sNext] = slides;
+    // zoom / déplacement de la photo actuelle
+    let zs = 1, zx = 0, zy = 0;
+
+    const big = (a) => a.getAttribute("href");
+    const small = (a) => { const im = a.querySelector("img"); return im.currentSrc || im.src; };
+    const isMobile = () => !matchMedia("(hover: hover) and (pointer: fine)").matches;
+    // zone d'affichage de la photo (place pour le compteur, la légende, les flèches)
+    const fitRect = (a) => {
+      const w = +a.dataset.w, h = +a.dataset.h;
+      const sx = isMobile() ? 0 : 84, top = isMobile() ? 64 : 72, bottom = isMobile() ? 96 : 84;
+      const aw = W - 2 * sx, ah = H - top - bottom;
+      const k = Math.min(aw / w, ah / h, 1.5);
+      const rw = w * k, rh = h * k;
+      return { left: sx + (aw - rw) / 2, top: top + (ah - rh) / 2, width: rw, height: rh };
+    };
+    const place = (sl, i) => {
+      sl.i = i;
+      if (i < 0 || i >= order.length) { sl.s.style.visibility = "hidden"; sl.img.removeAttribute("src"); return; }
+      sl.s.style.visibility = "";
+      sl.z.style.transition = "none";
+      const a = order[i], r = fitRect(a);
+      sl.rect = r;
+      Object.assign(sl.z.style, { width: r.width + "px", height: r.height + "px", transform: `translate3d(${r.left}px, ${r.top}px, 0)` });
+      // miniature déjà chargée tout de suite, puis la grande version une fois décodée
+      const lo = small(a), hi = big(a);
+      if (sl.img.dataset.src !== hi) {
+        sl.img.dataset.src = hi;
+        sl.img.src = lo || hi;
+        const pre = new Image(); pre.src = hi;
+        (pre.decode ? pre.decode() : Promise.resolve()).then(() => { if (sl.img.dataset.src === hi) sl.img.src = hi; }).catch(() => {});
+      }
+    };
+    const setStage = (dx, anim) => {
+      stage.style.transition = anim ? `transform ${anim}ms ${EASE}` : "none";
+      stage.style.transform = `translate3d(${dx}px, 0, 0)`;
+    };
+    const layout = () => {
+      W = window.innerWidth; H = window.innerHeight;
+      slides.forEach((sl) => (sl.s.style.transition = "none"));
+      sPrev.s.style.transform = `translate3d(${-(W + GAP)}px, 0, 0)`;
+      sCur.s.style.transform = "none";
+      sNext.s.style.transform = `translate3d(${W + GAP}px, 0, 0)`;
+      place(sPrev, idx - 1); place(sCur, idx); place(sNext, idx + 1);
+      zs = 1; zx = 0; zy = 0;
+    };
+    // transform de la photo actuelle (position de base + zoom)
+    const applyZoom = (anim) => {
+      const r = sCur.rect;
+      sCur.z.style.transition = anim ? `transform ${anim}ms ${EASE}` : "none";
+      sCur.z.style.transform = `translate3d(${r.left + zx}px, ${r.top + zy}px, 0) scale(${zs})`;
+    };
+    // garde la photo zoomée dans l'écran (centrée si plus petite que l'écran)
+    const clampZoom = () => {
+      const r = sCur.rect, w = r.width * zs, h = r.height * zs;
+      zx = w <= W ? W / 2 - r.left - w / 2 : Math.min(-r.left, Math.max(W - r.left - w, zx));
+      zy = h <= H ? H / 2 - r.top - h / 2 : Math.min(-r.top, Math.max(H - r.top - h, zy));
+      if (zs === 1) { zx = 0; zy = 0; }
+    };
+    const zoomAt = (cx, cy, z, anim) => {
+      const r = sCur.rect;
+      const ux = (cx - r.left - zx) / zs, uy = (cy - r.top - zy) / zs; // point de la photo sous le doigt
+      zs = Math.min(MAX_ZOOM, Math.max(1, z));
+      zx = cx - r.left - zs * ux; zy = cy - r.top - zs * uy;
+      clampZoom(); applyZoom(anim);
+    };
+    const updateUI = () => {
+      curEl.textContent = idx + 1;
+      capEl.textContent = order[idx].querySelector("img").alt;
+      btnPrev.disabled = idx === 0;
+      btnNext.disabled = idx === order.length - 1;
+    };
+    const go = (dir) => {
+      const j = idx + dir;
+      if (busy || j < 0 || j >= order.length) { setStage(0, reduce ? 0 : 260); return; }
+      busy = true;
+      if (zs !== 1) { zs = 1; zx = 0; zy = 0; applyZoom(reduce ? 0 : 200); }
+      const done = () => {
+        idx = j;
+        // on fait tourner les 3 emplacements : aucun rechargement visible
+        if (dir > 0) [sPrev, sCur, sNext] = [sCur, sNext, sPrev];
+        else [sPrev, sCur, sNext] = [sNext, sPrev, sCur];
+        setStage(0, 0);
+        layout(); updateUI(); busy = false;
+      };
+      if (reduce) { done(); return; }
+      setStage(-dir * (W + GAP), 340);
+      setTimeout(done, 350);
+    };
+
+    // sur un fond noir, rien d'autre ne doit être atteignable
+    const setInert = (on) => {
+      [...document.body.children].forEach((el) => { if (el !== lb && el.tagName !== "SCRIPT") el.inert = on; });
+    };
+    // FLIP : transform + clip-path qui font coïncider la grande photo avec la miniature
+    const thumbState = (a, r) => {
+      const t = a.getBoundingClientRect();
+      const im = a.querySelector("img"), cs = getComputedStyle(im);
+      const imgScale = new DOMMatrix(cs.transform === "none" ? undefined : cs.transform).a || 1; // zoom au survol
+      const [px, py] = cs.objectPosition.split(" ").map((v) => parseFloat(v) / 100);
+      const s = Math.max(t.width / r.width, t.height / r.height) * imgScale;
+      const vw = t.width / s, vh = t.height / s;          // partie visible, en pixels de la grande photo
+      const il = (r.width - vw) * (isNaN(px) ? .5 : px), it = (r.height - vh) * (isNaN(py) ? .5 : py);
+      const ir = r.width - vw - il, ib = r.height - vh - it;
+      const g = /grayscale\(([\d.]+)\)/.exec(getComputedStyle(a).filter);
+      return {
+        transform: `translate3d(${t.left - s * il}px, ${t.top - s * it}px, 0) scale(${s})`,
+        clipPath: `inset(${it}px ${ir}px ${ib}px ${il}px round ${4 / s}px)`,
+        filter: `grayscale(${g ? g[1] : 0})`,
+        visible: t.bottom > 0 && t.top < H && t.right > 0 && t.left < W,
+      };
+    };
+    // fill "backwards" à l'ouverture (ensuite le style inline reprend la main : glisser vers le bas
+    // peut estomper le fond) ; "forwards" à la fermeture (reste invisible jusqu'à la fin)
+    const fade = (els, from, to, ms, delay = 0, fill = "backwards") => els.map((el) => el.animate([{ opacity: from }, { opacity: to }], { duration: ms, delay, easing: "ease", fill }));
+
+    const openAt = (a) => {
+      if (open) return;
+      // ordre = ordre visuel (la mosaïque mobile n'a pas l'ordre du HTML)
+      order = [...thumbs].sort((p, q) => {
+        const r1 = p.getBoundingClientRect(), r2 = q.getBoundingClientRect();
+        return Math.round(r1.top) - Math.round(r2.top) || r1.left - r2.left;
+      });
+      idx = order.indexOf(a);
+      open = true; busy = true; lastFocus = a;
+      lb.hidden = false;
+      // bloque la page sans changer sa largeur (sinon, avec une barre de défilement
+      // classique, la page se remet en page et le navigateur décale le défilement)
+      const sbw = window.innerWidth - document.documentElement.clientWidth;
+      document.documentElement.style.overflow = "hidden";
+      if (sbw > 0) document.documentElement.style.paddingRight = sbw + "px";
+      setInert(true);
+      setStage(0, 0); layout(); updateUI();
+      btnClose.focus({ preventScroll: true });
+      const finish = () => { busy = false; };
+      if (reduce) { fade([lb], 0, 1, 200)[0].onfinish = finish; return; }
+      const from = thumbState(a, sCur.rect), r = sCur.rect;
+      a.style.visibility = "hidden";
+      sCur.z.style.transition = "none";
+      const anim = sCur.z.animate([
+        { transform: from.transform, clipPath: from.clipPath, filter: from.filter },
+        { transform: `translate3d(${r.left}px, ${r.top}px, 0) scale(1)`, clipPath: `inset(0px 0px 0px 0px round 0px)`, filter: "grayscale(0)" },
+      ], { duration: 480, easing: EASE });
+      fade([bg], 0, 1, 320);
+      fade(ui, 0, 1, 260, 180);
+      [sPrev, sNext].forEach((sl) => (sl.s.style.opacity = 0));
+      anim.onfinish = () => { [sPrev, sNext].forEach((sl) => (sl.s.style.opacity = "")); finish(); };
+    };
+
+    const close = () => {
+      if (!open || busy) return;
+      busy = true;
+      const a = order[idx];
+      const end = () => {
+        lb.getAnimations({ subtree: true }).forEach((x) => x.cancel());
+        lb.hidden = true; open = false; busy = false;
+        thumbs.forEach((t) => (t.style.visibility = ""));
+        sCur.s.style.transform = "none"; bg.style.opacity = "";
+        ui.forEach((el) => (el.style.opacity = ""));
+        document.documentElement.style.overflow = "";
+        document.documentElement.style.paddingRight = "";
+        setInert(false);
+        a.focus({ preventScroll: true });
+      };
+      if (reduce) { fade([lb], 1, 0, 200, 0, "forwards")[0].onfinish = end; return; }
+      // position actuelle (zoomée, glissée vers le bas…) → miniature
+      const cur = sCur.z.getBoundingClientRect(), r = sCur.rect;
+      const k = cur.width / r.width;
+      const start = `translate3d(${cur.left}px, ${cur.top}px, 0) scale(${k})`;
+      sCur.s.style.transform = "none"; setStage(0, 0);
+      sCur.z.style.transition = "none"; sCur.z.style.transform = start;
+      const bgFrom = parseFloat(getComputedStyle(bg).opacity);
+      lb.getAnimations().forEach((x) => x.cancel());
+      fade(ui, parseFloat(getComputedStyle(ui[0]).opacity), 0, 150, 0, "forwards");
+      fade([bg], bgFrom, 0, 320, 0, "forwards");
+      const to = thumbState(a, r);
+      let anim;
+      if (to.visible) {
+        a.style.visibility = "hidden";
+        anim = sCur.z.animate([
+          { transform: start, clipPath: "inset(0px 0px 0px 0px round 0px)", filter: "grayscale(0)" },
+          { transform: to.transform, clipPath: to.clipPath, filter: to.filter },
+        ], { duration: 420, easing: EASE, fill: "forwards" });
+      } else {
+        anim = sCur.z.animate([{ transform: start, opacity: 1 }, { transform: start + " scale(.92)", opacity: 0 }], { duration: 260, easing: "ease", fill: "forwards" });
+      }
+      anim.onfinish = end;
+    };
+
+    thumbs.forEach((a) => a.addEventListener("click", (e) => {
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return; // nouvel onglet : on laisse faire
+      e.preventDefault();
+      openAt(a);
+    }));
+    btnClose.addEventListener("click", close);
+    btnPrev.addEventListener("click", () => go(-1));
+    btnNext.addEventListener("click", () => go(1));
+    window.addEventListener("resize", () => { if (open && !busy) { setStage(0, 0); layout(); } });
+
+    document.addEventListener("keydown", (e) => {
+      if (!open) return;
+      if (e.key === "Escape") { e.preventDefault(); close(); }
+      else if (e.key === "ArrowRight") { e.preventDefault(); go(1); }
+      else if (e.key === "ArrowLeft") { e.preventDefault(); go(-1); }
+      else if (e.key === "Tab") {
+        // piège du focus : on reste sur les boutons de la visionneuse
+        const f = [btnClose, btnPrev, btnNext].filter((b) => !b.disabled && b.offsetParent !== null);
+        const i = f.indexOf(document.activeElement);
+        e.preventDefault();
+        f[(i + (e.shiftKey ? -1 : 1) + f.length) % f.length].focus();
+      }
+    });
+    lb.addEventListener("wheel", (e) => e.preventDefault(), { passive: false });
+
+    /* gestes (pointer events : doigt, souris, stylet) */
+    const pts = new Map();
+    let g = null;        // geste en cours
+    let lastTap = null;  // pour le double-tap
+    const onImage = (x, y) => {
+      const r = sCur.z.getBoundingClientRect();
+      return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+    };
+    stage.addEventListener("pointerdown", (e) => {
+      if (!open || busy) return;
+      try { stage.setPointerCapture(e.pointerId); } catch (_) { /* pointeur déjà relâché */ }
+      pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (pts.size === 2) {
+        // pincer : point milieu et écart de départ
+        const [p, q] = [...pts.values()];
+        g = { type: "pinch", d0: Math.hypot(p.x - q.x, p.y - q.y), z0: zs, mx: (p.x + q.x) / 2, my: (p.y + q.y) / 2, zx0: zx, zy0: zy };
+        return;
+      }
+      g = { type: "pending", x0: e.clientX, y0: e.clientY, t0: performance.now(), zx0: zx, zy0: zy, hist: [{ x: e.clientX, y: e.clientY, t: performance.now() }] };
+    });
+    stage.addEventListener("pointermove", (e) => {
+      if (!pts.has(e.pointerId) || !g) return;
+      pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (g.type === "pinch" && pts.size >= 2) {
+        const [p, q] = [...pts.values()];
+        const d = Math.hypot(p.x - q.x, p.y - q.y), mx = (p.x + q.x) / 2, my = (p.y + q.y) / 2;
+        const r = sCur.rect;
+        const ux = (g.mx - r.left - g.zx0) / g.z0, uy = (g.my - r.top - g.zy0) / g.z0;
+        zs = Math.min(MAX_ZOOM * 1.2, Math.max(.8, g.z0 * d / g.d0));
+        zx = mx - r.left - zs * ux; zy = my - r.top - zs * uy;
+        applyZoom(0);
+        return;
+      }
+      const dx = e.clientX - g.x0, dy = e.clientY - g.y0;
+      g.hist.push({ x: e.clientX, y: e.clientY, t: performance.now() }); if (g.hist.length > 6) g.hist.shift();
+      if (g.type === "pending") {
+        if (Math.hypot(dx, dy) < 8) return;
+        g.type = zs > 1 ? "pan" : Math.abs(dx) > Math.abs(dy) ? "swipe" : dy > 0 ? "down" : "none";
+      }
+      if (g.type === "pan") { zx = g.zx0 + dx; zy = g.zy0 + dy; applyZoom(0); }
+      else if (g.type === "swipe") {
+        const edge = (dx > 0 && idx === 0) || (dx < 0 && idx === order.length - 1);
+        setStage(edge ? dx * .3 : dx, 0); // résistance au bout de la série
+      } else if (g.type === "down") {
+        const k = Math.max(0, dy);
+        sCur.s.style.transition = "none";
+        sCur.s.style.transform = `translate3d(${dx * .5}px, ${k}px, 0) scale(${1 - Math.min(k / H, 1) * .25})`;
+        bg.style.opacity = String(Math.max(0, 1 - k / (H * .6)));
+        ui.forEach((el) => (el.style.opacity = String(Math.max(0, 1 - k / 120))));
+      }
+    });
+    const velocity = (h) => {
+      const a = h[0], b = h[h.length - 1], dt = Math.max(1, b.t - a.t);
+      return { vx: (b.x - a.x) / dt, vy: (b.y - a.y) / dt };
+    };
+    const endGesture = (e) => {
+      if (!pts.has(e.pointerId)) return;
+      pts.delete(e.pointerId);
+      if (!g) return;
+      if (g.type === "pinch") {
+        if (pts.size === 0) {
+          if (zs < 1.05) { zs = 1; zx = 0; zy = 0; }
+          else zs = Math.min(MAX_ZOOM, zs);
+          clampZoom(); applyZoom(reduce ? 0 : 280);
+          g = null;
+        }
+        return;
+      }
+      const dx = e.clientX - g.x0, dy = e.clientY - g.y0;
+      const { vx, vy } = velocity(g.hist);
+      if (g.type === "pending") {
+        // tap : double-tap = zoom ; tap à côté de la photo = fermer
+        const now = performance.now();
+        if (lastTap && now - lastTap.t < 320 && Math.hypot(e.clientX - lastTap.x, e.clientY - lastTap.y) < 30) {
+          lastTap = null;
+          if (zs > 1) { zs = 1; zx = 0; zy = 0; applyZoom(reduce ? 0 : 300); }
+          else zoomAt(e.clientX, e.clientY, 2.5, reduce ? 0 : 300);
+        } else {
+          lastTap = { t: now, x: e.clientX, y: e.clientY };
+          if (zs === 1 && !onImage(e.clientX, e.clientY)) { lastTap = null; close(); }
+        }
+      } else if (g.type === "pan") {
+        clampZoom(); applyZoom(reduce ? 0 : 300);
+      } else if (g.type === "swipe") {
+        if ((dx < -W * .2 || vx < -.45) && idx < order.length - 1) go(1);
+        else if ((dx > W * .2 || vx > .45) && idx > 0) go(-1);
+        else setStage(0, reduce ? 0 : 300);
+      } else if (g.type === "down") {
+        if (dy > 110 || vy > .5) close();
+        else {
+          sCur.s.style.transition = reduce ? "none" : `transform 300ms ${EASE}`;
+          sCur.s.style.transform = "none";
+          bg.style.opacity = ""; ui.forEach((el) => (el.style.opacity = ""));
+        }
+      }
+      g = null;
+    };
+    stage.addEventListener("pointerup", endGesture);
+    stage.addEventListener("pointercancel", endGesture);
   }
 })();

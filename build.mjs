@@ -8,7 +8,7 @@
 //          lightningcss a été écarté : il supprime ces replis.
 //   HTML : html-minifier-terser (sans commentaires). JSON-LD compacté avec JSON.parse/stringify,
 //          puis vérifié identique à la source.
-//   Reste copié : assets/, _headers, _redirects, robots.txt (sans ses lignes de commentaire), sitemap.xml.
+//   Reste copié : assets/ (sauf les images de assets/images non citées dans les sources), _headers, _redirects, robots.txt (sans ses lignes de commentaire), sitemap.xml.
 import { readFile, writeFile, rm, mkdir, cp, readdir, stat } from "node:fs/promises";
 import { join, dirname, extname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -76,10 +76,20 @@ await write("robots.txt", (await read("robots.txt")).split("\n").filter((l) => !
 
 // Fichiers copiés tels quels
 for (const f of COPY) await cp(join(ROOT, f), join(DIST, f));
+// assets/images : seules les photos citées dans les sources sont publiées
+// (les originaux JPEG de la galerie et les photos écartées restent dans le dépôt).
+const refs = (await Promise.all([...HTML, "styles.css", "script.js", "sitemap.xml"].map(read))).join("\n");
+const skipped = [];
 await cp(join(ROOT, "assets"), join(DIST, "assets"), {
   recursive: true,
-  filter: (p) => !p.endsWith(".DS_Store"),
+  filter: (p) => {
+    if (p.endsWith(".DS_Store")) return false;
+    const rel = p.slice(ROOT.length + 1);
+    if (/^assets\/images\/.+\.(jpe?g|png|webp|avif)$/i.test(rel) && !refs.includes(rel)) { skipped.push(rel.split("/").pop()); return false; }
+    return true;
+  },
 });
+if (skipped.length) console.log(`images non citées, non publiées : ${skipped.sort().join(", ")}`);
 
 // Récapitulatif
 let n = 0, size = 0;

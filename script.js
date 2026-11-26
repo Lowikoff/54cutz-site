@@ -78,11 +78,22 @@
   });
 
   /* ---------- reveal on scroll (IntersectionObserver) ---------- */
+  // opacity + translateY uniquement ; will-change posé juste avant
+  // l'animation et retiré à la fin (pas de calques GPU gardés en mémoire).
   const revealEls = document.querySelectorAll(".reveal:not(.hero .reveal), [data-reveal]");
+  const playReveal = (el) => {
+    el.style.willChange = "opacity, transform";
+    const done = () => { el.style.willChange = ""; };
+    el.addEventListener("transitionend", (e) => {
+      if (e.target === el && e.propertyName === "transform") done();
+    });
+    setTimeout(done, 1200); // filet si transitionend ne vient pas
+    requestAnimationFrame(() => el.classList.add("is-in"));
+  };
   if ("IntersectionObserver" in window && !reduce) {
     const io = new IntersectionObserver((entries) => {
       entries.forEach((en) => {
-        if (en.isIntersecting) { en.target.classList.add("is-in"); io.unobserve(en.target); }
+        if (en.isIntersecting) { playReveal(en.target); io.unobserve(en.target); }
       });
     }, { threshold: 0.15, rootMargin: "0px 0px -8% 0px" });
     revealEls.forEach((el) => io.observe(el));
@@ -131,7 +142,15 @@
   }
 
   /* ---------- parallax (GSAP ScrollTrigger) ---------- */
-  if (hasGSAP && !reduce) {
+  // Souris uniquement : au tactile, le parallaxe en scrub saccade et
+  // découvre les bords quand la barre d'adresse de Safari se replie.
+  // Seul le fond du hero porte encore data-parallax.
+  const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  if (hasGSAP && window.ScrollTrigger) {
+    gsap.registerPlugin(ScrollTrigger);
+    ScrollTrigger.config({ ignoreMobileResize: true });
+  }
+  if (hasGSAP && !reduce && finePointer) {
     gsap.registerPlugin(ScrollTrigger);
     document.querySelectorAll("[data-parallax]").forEach((el) => {
       const speed = parseFloat(el.dataset.parallax) || 0.15;

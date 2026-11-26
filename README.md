@@ -58,6 +58,8 @@ Sert le site comme Cloudflare (adresses sans .html, redirections 301, page 404).
 - [ ] **Sur un vrai téléphone** (iPhone Safari) : bouton Réserver flottant et menu (testé seulement en simulation).
 - [x] **Infos vérifiées sur Salonkee le 26/11/2026** : horaires, 4 barbers, prix par barber, politique d'annulation identiques au site. ✔ Durées (pas affichées sur le site) : Ismaël & Wyatt coupe 30 min, coupe + barbe 45 min, V.I.P 1 h, transformation 45 min (Ismaël : 45 min–1 h), barbe 15 min ; Raphaël coupe 45 min, coupe + barbe 1 h, barbe 30 min ; Bastien coupe 30 min, coupe + barbe 45 min.
 - [x] **N° d'entreprise corrigé** (26/11/2026) : l'ancien n° BE 0803.277.289 (Ismaël Alaoui, personne physique) est arrêté depuis le 01/01/2026 (BCE). Nouveau : **54 CUTZ SRL, BE 1031.637.857** (Salonkee + BCE). Mis à jour dans le footer des 3 pages, les mentions légales, la politique de confidentialité et le JSON-LD (`legalName`, `vatID`). ✔
+- [x] **Animations des images sur mobile** (26/11/2026) : parallaxe retiré des photos de l'équipe (zoom fixe 1.08), parallaxe du hero seulement à la souris, survols (`.member`, `.gallery__item`) et transitions de filtre réservés à `(hover: hover) and (pointer: fine)`, apparitions plus courtes au tactile (20 px, .6 s) avec `will-change` posé puis retiré. Testé en WebKit + Chromium à 375 px (tactile) et 1280 px (souris) en défilant toute la page. ✔
+- [ ] **Animations sur un vrai iPhone** : vérifier le défilement (photos équipe, galerie, hero) et la barre d'adresse de Safari qui se replie.
 - [x] **Horaires** : ligne du jour en magenta + « Aujourd'hui », badge « Ouvert maintenant · jusqu'à 20h » / « Fermé · ouvre mardi à 10h » (heure de Bruxelles, mis à jour chaque minute, caché sans JS). Horaires définis une fois dans `HOURS` (`script.js`) : si les horaires changent, modifier `HOURS`, la liste `.hours__list` et le JSON-LD. ✔
 
 ## Pages légales (Belgique)
@@ -98,6 +100,8 @@ horaires, adresse, email, conditions d'annulation, TVA, bios Ismaël & Wyatt.
 - Vérification Salonkee + BCE : n° d'entreprise remplacé par celui de 54 CUTZ SRL (BE 1031.637.857).
 - Horaires : jour actuel mis en évidence (`data-day` + `is-today`) et badge ouvert/fermé (fuseau Europe/Brussels).
 - Testé avec `npx wrangler dev`, Chromium + WebKit, 375 et 1280 px, horloge simulée (visiteur à New York / Tokyo) : mardi 11h, mardi 21h, samedi 14h30, lundi, dimanche 16h, mercredi 8h, passage de 15h et de minuit, sans JS.
+
+- Images au défilement sur mobile : plus de glissement après l'arrêt du scroll ni de bande sombre en haut des photos de l'équipe, plus de survol « collé » après un tap (détail dans la checklist).
 
 ## Améliorations du 26/11/2026
 - Images optimisées : logo 500 Ko → 40 Ko, photos utilisées environ 3 Mo → 1 Mo (mêmes noms de fichiers).

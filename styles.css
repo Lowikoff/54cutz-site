@@ -491,12 +491,13 @@ ul { list-style: none; }
   position: relative; overflow: hidden; border-radius: 4px;
   background: var(--char);
 }
+/* zoom léger fixe, sans parallaxe ni transition au défilement :
+   l'effet de survol (dézoom + couleur) est réservé à la souris, plus bas */
 .member__photo {
   aspect-ratio: 4/5; background-size: cover; background-position: center;
   filter: grayscale(0.5) contrast(1.05);
-  transform: scale(1.08); transition: transform 1.2s var(--ease), filter .6s var(--ease);
+  transform: scale(1.08);
 }
-.member:hover .member__photo { transform: scale(1); filter: grayscale(0); }
 .member__photo--ismael { background-image: url("assets/images/isma.jpg"); }
 .member__photo--wyatt  { background-image: url("assets/images/wyatt.jpg"); }
 .member__body {
@@ -520,9 +521,8 @@ a.member__handle:hover { color: var(--cream); }
 }
 .gallery__item {
   border-radius: 4px; background-size: cover; background-position: center;
-  filter: grayscale(0.4); transition: filter .6s var(--ease), transform .6s var(--ease);
+  filter: grayscale(0.4);
 }
-.gallery__item:hover { filter: grayscale(0); transform: scale(1.02); }
 .gallery__item--1 { grid-column: span 4; grid-row: span 2;
   background-image: url("assets/images/gallery6.jpg"); }
 .gallery__item--2 { grid-column: span 2; grid-row: span 1;
@@ -670,6 +670,24 @@ a.member__handle:hover { color: var(--cream); }
   transition: opacity .9s var(--ease), transform .9s var(--ease);
 }
 .reveal.is-in, [data-reveal].is-in { opacity: 1; transform: none; }
+/* mobile / tactile : apparition plus courte (20 px, .6 s) */
+@media (max-width: 760px), (hover: none) {
+  .reveal, [data-reveal] {
+    transform: translateY(20px);
+    transition-duration: .6s;
+  }
+}
+
+/* survol réservé à la souris : au tactile, un tap laissait la photo
+   dézoomée et en couleur (survol « collé ») */
+@media (hover: hover) and (pointer: fine) {
+  .member__photo { transition: transform 1.2s var(--ease), filter .6s var(--ease); }
+  .member:hover .member__photo { transform: scale(1); filter: grayscale(0); }
+  .gallery__item[data-reveal] {
+    transition: opacity .9s var(--ease), transform .9s var(--ease), filter .6s var(--ease);
+  }
+  .gallery__item:hover { filter: grayscale(0); }
+}
 
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }

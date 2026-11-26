@@ -537,9 +537,9 @@
   if (lb && thumbs.length) {
     const stage = lb.querySelector(".lb__stage");
     const bg = lb.querySelector(".lb__bg");
-    const ui = [...lb.querySelectorAll(".lb__count, .lb__caption, .lb__btn")];
+    const ui = [...lb.querySelectorAll(".lb__count, .lb__btn")];
     const curEl = lb.querySelector(".lb__current");
-    const capEl = lb.querySelector(".lb__caption");
+    const srEl = lb.querySelector(".lb__sr"); // annonce pour lecteurs d'écran (pas de légende visible)
     const btnClose = lb.querySelector(".lb__close");
     const btnPrev = lb.querySelector(".lb__prev");
     const btnNext = lb.querySelector(".lb__next");
@@ -567,10 +567,10 @@
     const big = (a) => a.getAttribute("href");
     const small = (a) => { const im = a.querySelector("img"); return im.currentSrc || im.src; };
     const isMobile = () => !matchMedia("(hover: hover) and (pointer: fine)").matches;
-    // zone d'affichage de la photo (place pour le compteur, la légende, les flèches)
+    // zone d'affichage de la photo (place pour le compteur et les flèches, centrée verticalement)
     const fitRect = (a) => {
       const w = +a.dataset.w, h = +a.dataset.h;
-      const sx = isMobile() ? 0 : 84, top = isMobile() ? 64 : 72, bottom = isMobile() ? 96 : 84;
+      const sx = isMobile() ? 0 : 84, top = isMobile() ? 64 : 72, bottom = top;
       const aw = W - 2 * sx, ah = H - top - bottom;
       const k = Math.min(aw / w, ah / h, 1.5);
       const rw = w * k, rh = h * k;
@@ -628,7 +628,8 @@
     };
     const updateUI = () => {
       curEl.textContent = idx + 1;
-      capEl.textContent = order[idx].querySelector("img").alt;
+      sCur.img.alt = order[idx].querySelector("img").alt; // la légende n'est plus affichée : le texte reste pour les lecteurs d'écran
+      srEl.textContent = `Photo ${idx + 1} sur ${order.length} : ${sCur.img.alt}`;
       btnPrev.disabled = idx === 0;
       btnNext.disabled = idx === order.length - 1;
     };
@@ -676,6 +677,17 @@
     // peut estomper le fond) ; "forwards" à la fermeture (reste invisible jusqu'à la fin)
     const fade = (els, from, to, ms, delay = 0, fill = "backwards") => els.map((el) => el.animate([{ opacity: from }, { opacity: to }], { duration: ms, delay, easing: "ease", fill }));
 
+    // Commandes (croix, flèches, compteur) masquées après 2 s sans mouvement,
+    // réaffichées au moindre mouvement, toucher ou touche du clavier.
+    let idleT = 0;
+    const wake = () => {
+      lb.classList.remove("lb--idle"); document.body.classList.remove("lb-idle");
+      clearTimeout(idleT);
+      if (open) idleT = setTimeout(() => { if (open) { lb.classList.add("lb--idle"); document.body.classList.add("lb-idle"); } }, 2000);
+    };
+    ["pointermove", "pointerdown"].forEach((t) => lb.addEventListener(t, wake, { passive: true }));
+    lb.addEventListener("keydown", wake);
+
     const openAt = (a) => {
       if (open) return;
       // ordre = ordre visuel (la mosaïque mobile n'a pas l'ordre du HTML)
@@ -694,6 +706,7 @@
       setInert(true);
       setStage(0, 0); layout(); updateUI();
       btnClose.focus({ preventScroll: true });
+      wake();
       const finish = () => { busy = false; };
       if (reduce) { fade([lb], 0, 1, 200)[0].onfinish = finish; return; }
       const from = thumbState(a, sCur.rect), r = sCur.rect;
@@ -716,6 +729,7 @@
       const end = () => {
         lb.getAnimations({ subtree: true }).forEach((x) => x.cancel());
         lb.hidden = true; open = false; busy = false;
+        clearTimeout(idleT); lb.classList.remove("lb--idle"); document.body.classList.remove("lb-idle");
         thumbs.forEach((t) => (t.style.visibility = ""));
         sCur.s.style.transform = "none"; bg.style.opacity = "";
         ui.forEach((el) => (el.style.opacity = ""));

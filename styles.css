@@ -1047,36 +1047,34 @@ body.legal-page { cursor: auto; }
 }
 .lb__count {
   position: absolute; top: 1rem; left: var(--pad); margin: 0;
-  font-family: var(--ff-cond); font-size: 1.25rem; letter-spacing: .14em;
-  color: var(--cream-d); line-height: 44px;
+  font-size: .75rem; letter-spacing: .14em; line-height: 44px;
+  color: rgba(255,255,255,.45); font-variant-numeric: tabular-nums;
+  transition: opacity .5s ease;
 }
-.lb__current { color: var(--cream); }
-.lb__caption {
-  position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);
-  width: min(62ch, calc(100% - 2 * var(--pad))); margin: 0;
-  padding: 1rem 0 calc(1.2rem + env(safe-area-inset-bottom, 0px));
-  text-align: center; color: var(--cream-d); font-size: .85rem; line-height: 1.5;
-}
+.lb__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* Interface épurée : icônes fines seules, sans fond ni bordure */
 .lb__btn {
-  position: absolute; width: 46px; height: 46px; padding: 0; border-radius: 50%;
+  position: absolute; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%;
   display: grid; place-items: center; cursor: pointer;
-  color: var(--cream); background: rgba(16,16,19,.55);
-  border: 1px solid var(--line);
-  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
-  transition: background-color .2s ease, border-color .2s ease, opacity .2s ease, transform .16s var(--ease);
+  color: rgba(255,255,255,.8); background: none;
+  transition: color .2s ease, opacity .5s ease, transform .16s var(--ease);
   touch-action: manipulation;
 }
-.lb__btn:active { transform: scale(.94); }
-.lb__btn:focus-visible { outline: 2px solid var(--magenta); outline-offset: 3px; }
-.lb__btn[disabled] { opacity: .25; cursor: default; }
+.lb__btn:active { transform: scale(.92); }
+.lb__btn:focus-visible { outline: 1px solid rgba(255,255,255,.6); outline-offset: 2px; }
+.lb__btn[disabled] { opacity: .2; cursor: default; }
 .lb__close { top: 1rem; right: var(--pad); }
-.lb__prev, .lb__next { top: 50%; margin-top: -23px; }
+.lb__prev, .lb__next { top: 50%; margin-top: -22px; }
 .lb__prev { left: 1.25rem; }
 .lb__next { right: 1.25rem; }
-.lb__prev:active, .lb__next:active { transform: scale(.94); }
+.lb__prev:active, .lb__next:active { transform: scale(.92); }
 @media (hover: hover) and (pointer: fine) {
-  .lb__btn:not([disabled]):hover { background: var(--magenta); border-color: var(--magenta); }
+  .lb__btn:not([disabled]):hover { color: #fff; }
 }
+/* après 2 s sans mouvement : seule la photo reste */
+.lb.lb--idle .lb__btn, .lb.lb--idle .lb__count { opacity: 0 !important; pointer-events: none; }
+.lb.lb--idle { cursor: none; }
+body.lb-idle .cursor, body.lb-idle .cursor-dot { visibility: hidden; }
 /* au tactile : on glisse, pas de flèches */
 @media not all and (hover: hover) and (pointer: fine) {
   .lb__prev, .lb__next { display: none; }

@@ -195,3 +195,10 @@ horaires, adresse, email, conditions d'annulation, TVA, bios Ismaël & Wyatt.
 - **Visionneuse** (JS vanilla, `#lightbox`) : la photo grandit depuis sa miniature (transform + clip-path) et y retourne à la fermeture ; flèches + ← → Échap ; glisser gauche/droite, glisser vers le bas pour fermer, pincer / double-tap (ou double-clic) pour zoomer ; tap sur le fond = fermer ; compteur « 4 / 10 », légende = alt, voisines préchargées ; page bloquée (largeur de la barre de défilement compensée), reste de la page `inert`, focus piégé, rendu à la miniature. `prefers-reduced-motion` : fondu. Sans JS : le lien ouvre la grande photo.
 - **Performance** : le loader attend maintenant la photo du hero et les polices (plus l'événement `load`). Les photos de l'équipe ont retrouvé `loading="lazy"` : sans lui, Lighthouse mobile tombait à 84–85 (LCP 4,2 s) depuis le changement précédent ; le pré-décodage (équipe + galerie) démarre une fois le premier écran affiché. Lighthouse mobile (local, `dist/`) : Performance 93–94, Accessibilité 100, Bonnes pratiques 100, LCP 2,9 s, CLS 0.
 - Testé avec `npm run dev`, WebKit + Chromium, 375 et 1280 px. **À tester sur un vrai iPhone** : swipe, pincer, glisser vers le bas.
+
+## Visionneuse épurée (26/11/2026, 16h30)
+- Légende retirée (le texte alt reste sur la photo affichée, pour les lecteurs d'écran).
+- Interface minimale : croix fine, compteur discret (petit, gris), flèches fines sur ordinateur ; plus de fond, bordure ni flou sur les boutons. Photo centrée verticalement (plus de place réservée à la légende).
+- Après 2 s sans mouvement, les commandes et le curseur disparaissent ; tout revient au moindre mouvement, toucher ou touche.
+- Sans légende visible, une zone invisible (`.lb__sr`, `aria-live`) annonce « Photo 4 sur 10 : … » aux lecteurs d'écran à chaque changement de photo.
+- Testé WebKit + Chromium, 375 et 1280 px (ouverture, gestes, clavier, masquage après 2 s, mouvement réduit) : tout OK. Publié le 26/11/2026.

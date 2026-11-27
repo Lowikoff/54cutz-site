@@ -205,19 +205,22 @@
   /* ---------- reveal on scroll (IntersectionObserver) ---------- */
   // opacity + translateY uniquement ; will-change posé juste avant
   // l'animation et retiré à la fin (pas de calques GPU gardés en mémoire).
-  // Mobile / tactile (même requête que le CSS) : montée + cascade de 70 ms
-  // entre frères (5 max),
-  // classe .rv posée ici = le CSS ne cache rien si ce code ne tourne pas.
+  // Mobile / tactile (même requête que le CSS) : si animation-timeline est
+  // pris en charge, le CSS lie les révélations au défilement (styles.css,
+  // « RÉVÉLATIONS MOBILES ») et ce code n'y touche pas. Sinon (repli) :
+  // montée 24 px + cascade de 70 ms entre frères (5 max) ; classe .rv posée
+  // ici = le CSS ne cache rien si ce code ne tourne pas.
   // Hero, photos de l'équipe et galerie gardent l'ancienne révélation.
   const mobile = window.matchMedia("(max-width: 760px), (hover: none)").matches;
-  const revealEls = [...document.querySelectorAll(".reveal:not(.hero .reveal), [data-reveal]")];
+  const scrollLinked = mobile && !reduce && !!window.CSS && CSS.supports("animation-timeline: view()");
+  const revealEls = [...document.querySelectorAll(".reveal:not(.hero .reveal), [data-reveal]")]
+    .filter((el) => !scrollLinked || el.matches(".member, .gallery__item"));
   const playReveal = (el, delay = 0) => {
     el.style.willChange = "opacity, transform";
     if (delay) el.style.setProperty("--rv-d", delay + "ms");
     const done = () => {
       el.style.willChange = "";
       el.style.removeProperty("--rv-d");
-      if (el.classList.contains("rv-curtain")) el.style.clipPath = "none";
     };
     el.addEventListener("transitionend", (e) => {
       if (e.target === el && e.propertyName === "transform") done();
@@ -254,7 +257,6 @@
     revealEls.forEach((el) => {
       if (ioMob && !el.matches(".member, .gallery__item")) {
         el.classList.add("rv");
-        if (el.matches(".section-head__title, .about__title")) el.classList.add("rv-curtain");
         (el.offsetHeight > window.innerHeight * 0.7 ? ioMobTall : ioMob).observe(el);
       } else {
         ioOld.observe(el);
@@ -268,9 +270,17 @@
   const wordEl = document.querySelector(".reveal-words");
   if (wordEl) {
     const text = wordEl.textContent.trim();
-    wordEl.innerHTML = text.split(/\s+/)
-      .map((w, i) => `<span class="word" style="--i:${i}">${w}</span>`).join(" ");
-    if (mobile && !reduce && "IntersectionObserver" in window) {
+    const words = text.split(/\s+/);
+    // défilement lié (CSS) : fenêtres de 10 % étalées de 6 à 46 % de la
+    // timeline du texte, chaque mot un peu après le précédent
+    const step = 30 / Math.max(words.length - 1, 1);
+    const range = (i) => scrollLinked
+      ? `;animation-range:cover ${(6 + i * step).toFixed(2)}% cover ${(16 + i * step).toFixed(2)}%` : "";
+    wordEl.innerHTML = words
+      .map((w, i) => `<span class="word" style="--i:${i}${range(i)}">${w}</span>`).join(" ");
+    if (scrollLinked) {
+      // rien à faire : tout est en CSS
+    } else if (mobile && !reduce && "IntersectionObserver" in window) {
       // mobile : un scrub JS suit mal l'élan du défilement de Safari iOS
       // (même défaut que l'ancien parallaxe JS) → fondu mot par mot
       // déclenché une fois, en CSS (opacity seule, sans GSAP)

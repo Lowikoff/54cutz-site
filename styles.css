@@ -790,8 +790,9 @@ ul { list-style: none; }
     transform: translateY(20px);
     transition-duration: .6s;
   }
-  /* .rv = posée par script.js sur les autres blocs (services, tarifs, stats,
-     FAQ, horaires, carte, titres…) : montée 24 px, .7 s, cascade --rv-d.
+  /* REPLI (navigateurs sans animation-timeline) : .rv posée par script.js
+     sur les autres blocs (services, tarifs, stats, FAQ, horaires, carte,
+     titres…) : montée 24 px, .7 s, --ease-out, cascade --rv-d.
      Rien n'est caché si le JS ne tourne pas. */
   .rv {
     transform: translateY(24px);
@@ -799,15 +800,6 @@ ul { list-style: none; }
                 transform .7s var(--ease-out) var(--rv-d, 0ms);
   }
   .rv.is-in { opacity: 1; transform: none; }
-  /* titres de section : rideau (clip-path) + montée ; fin légèrement
-     négative pour ne pas rogner les accents */
-  .rv-curtain {
-    clip-path: inset(0 0 100% 0);
-    transition: opacity .5s var(--ease-out) var(--rv-d, 0ms),
-                transform .7s var(--ease-out) var(--rv-d, 0ms),
-                clip-path .9s var(--ease-out) var(--rv-d, 0ms);
-  }
-  .rv-curtain.is-in { clip-path: inset(-12% -4%); }
 
   /* statement : fondu mot par mot déclenché (pas de scrub) */
   .reveal-words .word { transition: opacity .6s var(--ease-out) calc(var(--i, 0) * 35ms); }
@@ -1049,6 +1041,63 @@ body.legal-page { cursor: auto; }
 }
 @keyframes px-hero  { from { transform: translate3d(0, 0, 0); }   to { transform: translate3d(0, 15%, 0); } }
 @keyframes px-photo { from { transform: translate3d(0, -8%, 0); } to { transform: translate3d(0, 8%, 0); } }
+
+/* ============================================================
+   RÉVÉLATIONS MOBILES — liées au défilement (scroll-driven)
+   Mobile / tactile uniquement (même requête que script.js), hors hero,
+   photos de l'équipe et galerie. L'avancement suit le doigt : aucun
+   « pop ». Uniquement opacity + translate (propriété translate et non
+   transform : le FLIP de la FAQ anime transform, les deux s'additionnent).
+   Plages communes : A = cover 0 → 32 %, B (2e temps d'un groupe) = 6 → 38 %.
+   Repli sans support : IntersectionObserver (.rv plus haut).
+   ============================================================ */
+@supports (animation-timeline: view()) {
+  @media (max-width: 760px), (hover: none) {
+    @media (prefers-reduced-motion: no-preference) {
+      /* l'état caché vient de l'animation seule : timeline inactive = visible */
+      .reveal:not(.hero .reveal), [data-reveal]:not(.member, .gallery__item) {
+        opacity: 1; transform: none; transition: none;
+      }
+      .section-head__index, .section-head__title, .section-head__lead,
+      .about__title, .about__body,
+      .service, .pricing__title, .pricing__scroll, .services__note,
+      .stat, .hours__head, .hours__list li, .address, .map,
+      .faq__item, .gallery__note, .book__eyebrow, .book__policy {
+        animation: rv-up var(--ease-out) both;
+        animation-timeline: view();
+        animation-range: cover 0% cover 32%;
+      }
+      /* en-tête de section = un seul bloc : index + titre, puis l'accroche */
+      .section-head { view-timeline: --rv-head block; }
+      .section-head__index, .section-head__title { animation-timeline: --rv-head; }
+      .section-head__lead { animation-timeline: --rv-head; animation-range: cover 6% cover 38%; }
+      /* présentation : titre puis texte, même timeline */
+      .about { view-timeline: --rv-about block; }
+      .about__title { animation-timeline: --rv-about; animation-range: cover 0% cover 25%; }
+      .about__body { animation-timeline: --rv-about; animation-range: cover 4% cover 30%; }
+      /* services : la ligne monte et son trait se dessine */
+      .service { view-timeline: --rv-svc block; animation-timeline: --rv-svc; border-bottom-color: transparent; }
+      .service::after {
+        content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 1px;
+        background: var(--line); transform-origin: 0 50%;
+        animation: rv-line var(--ease-out) both;
+        animation-timeline: --rv-svc;
+        animation-range: cover 6% cover 38%;
+      }
+      /* statement : plage décalée mot par mot (posée par script.js) */
+      .statement__text { view-timeline: --rv-stmt block; }
+      .reveal-words .word {
+        transition: none;
+        animation: rv-word linear both;
+        animation-timeline: --rv-stmt;
+        animation-range: cover 6% cover 16%;
+      }
+    }
+  }
+}
+@keyframes rv-up   { from { opacity: 0; translate: 0 28px 0; } to { opacity: 1; translate: none; } }
+@keyframes rv-line { from { transform: scaleX(0); } to { transform: none; } }
+@keyframes rv-word { from { opacity: .4; } to { opacity: 1; } }
 
 /* ============================================================
    VISIONNEUSE (galerie) — pilotée par script.js

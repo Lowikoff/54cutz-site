@@ -130,6 +130,10 @@
   const easeInOutCubic = (t) => (t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
   const STOP_EVENTS = ["wheel", "touchstart", "mousedown", "keydown"];
   let scrollRun = null;
+  // révélations mobiles : jusqu'à cet instant, ce qui entre à l'écran vient
+  // d'un saut (ancre, chargement) → fondu court sans montée
+  let quickUntil = performance.now() + 600;
+  const markJump = (ms) => { quickUntil = Math.max(quickUntil, performance.now() + ms); };
   const stopScroll = () => {
     if (!scrollRun) return;
     cancelAnimationFrame(scrollRun.raf);
@@ -142,6 +146,7 @@
     const dist = Math.abs(targetY(el) - startY);
     if (reduce || dist < 2) { window.scrollTo(0, targetY(el)); focusTarget(el); return; }
     const duration = Math.min(1000, Math.max(600, 450 + dist * 0.12));
+    markJump(duration + 300);
     const t0 = performance.now();
     const run = { raf: 0 };
     const step = (now) => {
@@ -170,6 +175,7 @@
       stopScroll();
       document.body.style.overflow = "";
       nav.classList.add("is-scrolled"); // hauteur d'arrivée du header
+      markJump(600);
       window.scrollTo(0, targetY(target));
       setHash(href);
       focusTarget(target);
@@ -198,98 +204,108 @@
     const target = anchorTarget(location.hash);
     // après le load (le navigateur fait lui-même son saut natif à ce moment-là)
     if (target) window.addEventListener("load", () => requestAnimationFrame(() => {
-      if (!scrollRun) window.scrollTo(0, targetY(target));
+      if (!scrollRun) { markJump(600); window.scrollTo(0, targetY(target)); }
     }), { once: true });
   }
 
   /* ---------- reveal on scroll (IntersectionObserver) ---------- */
-  // opacity + translateY uniquement ; will-change posé juste avant
-  // l'animation et retiré à la fin (pas de calques GPU gardés en mémoire).
-  // Mobile / tactile (même requête que le CSS) : si animation-timeline est
-  // pris en charge, le CSS lie les révélations au défilement (styles.css,
-  // « RÉVÉLATIONS MOBILES ») et ce code n'y touche pas. Sinon (repli) :
-  // montée 24 px + cascade de 70 ms entre frères (5 max) ; classe .rv posée
-  // ici = le CSS ne cache rien si ce code ne tourne pas.
-  // Hero, photos de l'équipe et galerie gardent l'ancienne révélation.
+  // Ordinateur : .reveal / [data-reveal] (montée 40 px, .9 s).
+  // Mobile / tactile (même requête que le CSS) : hero, photos de l'équipe et
+  // galerie gardent cette révélation ; tout le reste est piloté par les
+  // « révélations mobiles » plus bas (on leur retire .reveal / data-reveal :
+  // un seul système par élément).
+  // will-change posé juste avant l'animation et retiré à la fin.
   const mobile = window.matchMedia("(max-width: 760px), (hover: none)").matches;
-  const scrollLinked = mobile && !reduce && !!window.CSS && CSS.supports("animation-timeline: view()");
-  const revealEls = [...document.querySelectorAll(".reveal:not(.hero .reveal), [data-reveal]")]
-    .filter((el) => !scrollLinked || el.matches(".member, .gallery__item"));
-  const playReveal = (el, delay = 0) => {
-    el.style.willChange = "opacity, transform";
-    if (delay) el.style.setProperty("--rv-d", delay + "ms");
-    const done = () => {
-      el.style.willChange = "";
-      el.style.removeProperty("--rv-d");
-    };
-    el.addEventListener("transitionend", (e) => {
-      if (e.target === el && e.propertyName === "transform") done();
-    });
-    setTimeout(done, delay + 1500); // filet si transitionend ne vient pas
-    requestAnimationFrame(() => el.classList.add("is-in"));
-  };
+  if (mobile) {
+    document.querySelectorAll(".reveal:not(.hero .reveal), [data-reveal]:not(.member, .gallery__item)")
+      .forEach((el) => { el.classList.remove("reveal"); el.removeAttribute("data-reveal"); });
+  }
+  const revealEls = document.querySelectorAll(".reveal:not(.hero .reveal), [data-reveal]");
   if ("IntersectionObserver" in window && !reduce) {
     const ioOld = new IntersectionObserver((entries) => {
       entries.forEach((en) => {
-        if (en.isIntersecting) { playReveal(en.target); ioOld.unobserve(en.target); }
+        if (!en.isIntersecting) return;
+        const el = en.target;
+        ioOld.unobserve(el);
+        el.style.willChange = "opacity, transform";
+        const done = () => { el.style.willChange = ""; };
+        el.addEventListener("transitionend", (e) => {
+          if (e.target === el && e.propertyName === "transform") done();
+        });
+        setTimeout(done, 1500); // filet si transitionend ne vient pas
+        requestAnimationFrame(() => el.classList.add("is-in"));
       });
     }, { threshold: 0.15, rootMargin: "0px 0px -8% 0px" });
-    // mobile : départ tardif par défaut (≈ 15 % visible, bas du viewport réduit
-    // de 10 %) pour que l'animation soit vue ; les blocs plus hauts que 70 % de
-    // l'écran (tarifs, FAQ, carte, horaires) partent dès qu'ils touchent le bas.
-    const mobObserver = (opts) => {
-      const io = new IntersectionObserver((entries) => {
-        const seen = new Map(); // rang dans la fournée, par parent
-        entries
-          .filter((en) => en.isIntersecting)
-          .sort((a, b) => (a.target.compareDocumentPosition(b.target) & 4 ? -1 : 1))
-          .forEach((en) => {
-            const rank = seen.get(en.target.parentElement) || 0;
-            seen.set(en.target.parentElement, rank + 1);
-            playReveal(en.target, Math.min(rank, 4) * 70);
-            io.unobserve(en.target);
-          });
-      }, opts);
-      return io;
-    };
-    const ioMob = mobile && mobObserver({ threshold: 0.15, rootMargin: "0px 0px -10% 0px" });
-    const ioMobTall = mobile && mobObserver({ threshold: 0, rootMargin: "0px 0px -5% 0px" });
-    revealEls.forEach((el) => {
-      if (ioMob && !el.matches(".member, .gallery__item")) {
-        el.classList.add("rv");
-        (el.offsetHeight > window.innerHeight * 0.7 ? ioMobTall : ioMob).observe(el);
-      } else {
-        ioOld.observe(el);
-      }
-    });
+    revealEls.forEach((el) => ioOld.observe(el));
   } else {
     revealEls.forEach((el) => el.classList.add("is-in"));
   }
 
-  /* ---------- statement: word-by-word fade ---------- */
-  const wordEl = document.querySelector(".reveal-words");
+  /* ---------- révélations mobiles (un seul système) ----------
+     Chaque unité visuelle (en-tête de section, paragraphe, ligne de service,
+     de tarif, d'horaire, question de FAQ, stat, carte, statement entier)
+     apparaît une fois, avec le même mouvement : opacity 0 → 1 + montée
+     (--rv-dist / --rv-dur / --rv-ease, en tête de styles.css).
+     Un seul observer : 20 % visible, bas de l'écran réduit de 12 %.
+     Cascade : 60 ms entre frères arrivés dans le même lot, 4 au plus.
+     Déjà à l'écran au chargement ou après un clic sur une ancre : fondu
+     court (.4 s) sans montée. .m-rv n'est posée qu'ici : sans JS, rien
+     n'est caché ; mouvement réduit : rien n'est posé. Bloc plus haut que
+     70 % de l'écran : jamais animé en entier (laissé visible).
+     Filet : 4 s après un défilement, tout ce qui est encore caché alors
+     qu'il est déjà passé dans l'écran apparaît en fondu. */
+  const RV_UNITS = ".section-head, .statement__text, .about__title, .about__body > p, " +
+    ".service, .pricing__title, .pricing__table tr, .services__note, .stat, " +
+    ".hours__head, .hours__list li, .address, .map, .faq__item, .gallery__note, " +
+    ".book__eyebrow, .book__policy";
+  if (mobile && !reduce && "IntersectionObserver" in window) {
+    const maxH = window.innerHeight * 0.7;
+    const pending = new Set([...document.querySelectorAll(RV_UNITS)].filter((el) => el.offsetHeight <= maxH));
+    let io = null;
+    const show = (el, quick, delay) => {
+      pending.delete(el);
+      io.unobserve(el);
+      if (quick) el.classList.add("m-rv--fade");
+      if (delay) el.style.transitionDelay = delay + "ms";
+      el.style.willChange = "opacity, translate";
+      requestAnimationFrame(() => el.classList.add("is-in"));
+      setTimeout(() => { el.style.willChange = ""; el.style.transitionDelay = ""; },
+        delay + (quick ? 500 : 1000));
+    };
+    io = new IntersectionObserver((entries) => {
+      const quick = performance.now() < quickUntil;
+      const rank = new Map(); // rang dans le lot, par parent
+      entries
+        .filter((en) => en.isIntersecting)
+        .sort((a, b) => (a.target.compareDocumentPosition(b.target) & 4 ? -1 : 1))
+        .forEach((en) => {
+          const p = en.target.parentElement, r = rank.get(p) || 0;
+          rank.set(p, r + 1);
+          show(en.target, quick, quick ? 0 : Math.min(r, 3) * 60);
+        });
+    }, { threshold: 0.2, rootMargin: "0px 0px -12% 0px" });
+    pending.forEach((el) => { el.classList.add("m-rv"); io.observe(el); });
+
+    let netTimer = 0;
+    const sweep = () => {
+      netTimer = 0;
+      const line = window.innerHeight * 0.75;
+      pending.forEach((el) => { if (el.getBoundingClientRect().top < line) show(el, true, 0); });
+      if (!pending.size) window.removeEventListener("scroll", armNet);
+    };
+    const armNet = () => { if (!netTimer) netTimer = setTimeout(sweep, 4000); };
+    window.addEventListener("scroll", armNet, { passive: true });
+    armNet();
+  }
+
+  /* ---------- statement : fondu mot par mot (ordinateur) ----------
+     Mobile : le paragraphe entier est une unité des révélations mobiles. */
+  const wordEl = !mobile && document.querySelector(".reveal-words");
   if (wordEl) {
-    const text = wordEl.textContent.trim();
-    const words = text.split(/\s+/);
-    // défilement lié (CSS) : fenêtres de 10 % étalées sur 30 % de la timeline
-    // du texte à partir de --rv-start + --rv-step (styles.css), chaque mot un
-    // peu après le précédent
-    const step = 30 / Math.max(words.length - 1, 1);
-    const range = (i) => scrollLinked
-      ? `;animation-range:cover calc(var(--rv-start) + var(--rv-step) + ${(i * step).toFixed(2)}%) cover calc(var(--rv-start) + var(--rv-step) + ${(10 + i * step).toFixed(2)}%)` : "";
+    const words = wordEl.textContent.trim().split(/\s+/);
     wordEl.innerHTML = words
-      .map((w, i) => `<span class="word" style="--i:${i}${range(i)}">${w}</span>`).join(" ");
-    if (scrollLinked) {
-      // rien à faire : tout est en CSS
-    } else if (mobile && !reduce && "IntersectionObserver" in window) {
-      // mobile : un scrub JS suit mal l'élan du défilement de Safari iOS
-      // (même défaut que l'ancien parallaxe JS) → fondu mot par mot
-      // déclenché une fois, en CSS (opacity seule, sans GSAP)
-      const ioWords = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting) { wordEl.classList.add("is-in"); ioWords.disconnect(); }
-      }, { threshold: 0, rootMargin: "0px 0px -12% 0px" });
-      ioWords.observe(wordEl);
-    } else if (hasGSAP && !reduce) {
+      .map((w, i) => `<span class="word" style="--i:${i}">${w}</span>`).join(" ");
+    if (hasGSAP && !reduce) {
       gsap.registerPlugin(ScrollTrigger);
       // pas de recalcul quand la barre d'adresse de Safari se replie
       ScrollTrigger.config({ ignoreMobileResize: true });

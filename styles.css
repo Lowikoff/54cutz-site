@@ -16,11 +16,10 @@
    ============================================================ */
 
 :root {
-  /* révélations mobiles liées au défilement (voir « RÉVÉLATIONS MOBILES ») :
-     plus le % est grand, plus l'animation démarre tard */
-  --rv-start: 14%;   /* 1er temps : début (0 % = l'élément touche le bas de l'écran) */
-  --rv-end:   46%;   /* 1er temps : fin */
-  --rv-step:   6%;   /* 2e temps = 1er temps décalé de ce pas */
+  /* révélations mobiles (voir « RÉVÉLATIONS MOBILES ») : un seul mouvement */
+  --rv-dist: 18px;                      /* montée */
+  --rv-dur:  .9s;                       /* durée */
+  --rv-ease: cubic-bezier(.22,1,.36,1); /* courbe */
   /* base — monochrome, from the white brushstroke logo */
   --black:   #08080a;
   --char:    #101013;
@@ -798,20 +797,6 @@ ul { list-style: none; }
     transform: translateY(20px);
     transition-duration: .6s;
   }
-  /* REPLI (navigateurs sans animation-timeline) : .rv posée par script.js
-     sur les autres blocs (services, tarifs, stats, FAQ, horaires, carte,
-     titres…) : montée 24 px, .7 s, --ease-out, cascade --rv-d.
-     Rien n'est caché si le JS ne tourne pas. */
-  .rv {
-    transform: translateY(24px);
-    transition: opacity .7s var(--ease-out) var(--rv-d, 0ms),
-                transform .7s var(--ease-out) var(--rv-d, 0ms);
-  }
-  .rv.is-in { opacity: 1; transform: none; }
-
-  /* statement : fondu mot par mot déclenché (pas de scrub) */
-  .reveal-words .word { transition: opacity .6s var(--ease-out) calc(var(--i, 0) * 35ms); }
-  .reveal-words.is-in .word { opacity: 1; }
 }
 
 /* survol réservé à la souris : au tactile, un tap laissait la photo
@@ -1051,63 +1036,23 @@ body.legal-page { cursor: auto; }
 @keyframes px-photo { from { transform: translate3d(0, -8%, 0); } to { transform: translate3d(0, 8%, 0); } }
 
 /* ============================================================
-   RÉVÉLATIONS MOBILES — liées au défilement (scroll-driven)
+   RÉVÉLATIONS MOBILES — un seul système (script.js, « révélations mobiles »)
    Mobile / tactile uniquement (même requête que script.js), hors hero,
-   photos de l'équipe et galerie. L'avancement suit le doigt : aucun
-   « pop ». Uniquement opacity + translate (propriété translate et non
-   transform : le FLIP de la FAQ anime transform, les deux s'additionnent).
-   Plages communes (variables --rv-* dans :root) : 1er temps = cover
-   --rv-start → --rv-end (14 → 46 %), 2e temps d'un groupe = + --rv-step
-   (20 → 52 %). Plus le % est grand, plus l'animation démarre tard.
-   Repli sans support : IntersectionObserver (.rv plus haut).
+   photos de l'équipe et galerie. .m-rv est posée par le JS seulement :
+   sans JS, rien n'est caché. Une unité = un mouvement, une seule fois :
+   opacity 0 → 1 + montée --rv-dist, --rv-dur, --rv-ease. Propriété
+   translate (et non transform) : le FLIP de la FAQ anime transform.
+   .m-rv--fade : déjà à l'écran (chargement, clic sur une ancre) → fondu
+   court sans montée.
    ============================================================ */
-@supports (animation-timeline: view()) {
-  @media (max-width: 760px), (hover: none) {
-    @media (prefers-reduced-motion: no-preference) {
-      /* l'état caché vient de l'animation seule : timeline inactive = visible */
-      .reveal:not(.hero .reveal), [data-reveal]:not(.member, .gallery__item) {
-        opacity: 1; transform: none; transition: none;
-      }
-      .section-head__index, .section-head__title, .section-head__lead,
-      .about__title, .about__body,
-      .service, .pricing__title, .pricing__scroll, .services__note,
-      .stat, .hours__head, .hours__list li, .address, .map,
-      .faq__item, .gallery__note, .book__eyebrow, .book__policy {
-        animation: rv-up var(--ease-out) both;
-        animation-timeline: view();
-        animation-range: cover var(--rv-start) cover var(--rv-end);
-      }
-      /* en-tête de section = un seul bloc : index + titre, puis l'accroche */
-      .section-head { view-timeline: --rv-head block; }
-      .section-head__index, .section-head__title { animation-timeline: --rv-head; }
-      .section-head__lead { animation-timeline: --rv-head; animation-range: cover calc(var(--rv-start) + var(--rv-step)) cover calc(var(--rv-end) + var(--rv-step)); }
-      /* présentation : titre puis texte, même timeline */
-      .about { view-timeline: --rv-about block; }
-      .about__title { animation-timeline: --rv-about; animation-range: cover var(--rv-start) cover calc(var(--rv-start) + 25%); }
-      .about__body { animation-timeline: --rv-about; animation-range: cover calc(var(--rv-start) + 4%) cover calc(var(--rv-start) + 30%); }
-      /* services : la ligne monte et son trait se dessine */
-      .service { view-timeline: --rv-svc block; animation-timeline: --rv-svc; border-bottom-color: transparent; }
-      .service::after {
-        content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 1px;
-        background: var(--line); transform-origin: 0 50%;
-        animation: rv-line var(--ease-out) both;
-        animation-timeline: --rv-svc;
-        animation-range: cover calc(var(--rv-start) + var(--rv-step)) cover calc(var(--rv-end) + var(--rv-step));
-      }
-      /* statement : plage décalée mot par mot (posée par script.js) */
-      .statement__text { view-timeline: --rv-stmt block; }
-      .reveal-words .word {
-        transition: none;
-        animation: rv-word linear both;
-        animation-timeline: --rv-stmt;
-        animation-range: cover calc(var(--rv-start) + var(--rv-step)) cover calc(var(--rv-start) + var(--rv-step) + 10%);
-      }
-    }
+@media (max-width: 760px), (hover: none) {
+  .m-rv {
+    opacity: 0; translate: 0 var(--rv-dist);
+    transition: opacity var(--rv-dur) var(--rv-ease), translate var(--rv-dur) var(--rv-ease);
   }
+  .m-rv--fade { translate: none; transition: opacity .4s var(--rv-ease); }
+  .m-rv.is-in { opacity: 1; translate: none; }
 }
-@keyframes rv-up   { from { opacity: 0; translate: 0 28px 0; } to { opacity: 1; translate: none; } }
-@keyframes rv-line { from { transform: scaleX(0); } to { transform: none; } }
-@keyframes rv-word { from { opacity: .4; } to { opacity: 1; } }
 
 /* ============================================================
    VISIONNEUSE (galerie) — pilotée par script.js

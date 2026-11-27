@@ -310,18 +310,27 @@ ul { list-style: none; }
   line-height: .82; letter-spacing: -.01em; text-transform: uppercase;
 }
 .hero__title .line { display: block; overflow: hidden; }
-.hero__title .line > span { display: block; transform: translateY(105%); }
+.hero__title .line > span { display: block; transform: translateY(calc(105% + var(--rise, 0em))); }
+/* Anton déborde de sa ligne (line-height .82) : capitales de -.042 em en haut à +.036 em en bas.
+   Le masque de BARBER est agrandi de .1 em (clip-path, sans changer la mise en page) ;
+   le départ de la montée est reculé d'autant pour que le texte reste caché au début. */
+.hero__title .line:not(.line--accent) {
+  overflow: visible; clip-path: inset(-.1em 0 -.1em 0);
+  --rise: .11em;
+}
 .hero__title .line--accent {
   font-family: var(--ff-serif); font-style: italic; font-weight: 400;
   text-transform: none;
-  font-size: clamp(2.5rem, 9vw, 7rem); margin-top: -.1em;
+  font-size: clamp(2.5rem, 9vw, 7rem); margin-top: .08em;
   margin-left: .15em;
+  /* Halo sur la ligne qui masque (pas sur le texte) : le filtre s'applique après le
+     masque, le halo n'est plus coupé en rectangle. */
+  filter: drop-shadow(0 0 26px rgba(255,45,143,0.35));
 }
 .hero__title .line--accent > span {
   background: var(--neon);
   -webkit-background-clip: text; background-clip: text;
   -webkit-text-fill-color: transparent; color: transparent;
-  filter: drop-shadow(0 0 26px rgba(255,45,143,0.35));
 }
 .hero__sub {
   max-width: 46ch; margin: 2rem 0; font-size: clamp(1rem, 2.2vw, 1.2rem);
@@ -375,6 +384,11 @@ ul { list-style: none; }
 .reveal-words .word {
   display: inline-block; opacity: .4; /* .4 = contraste ≥ 3:1 (grand texte) avant l'apparition */
   transition: opacity .5s var(--ease);
+}
+/* téléphone / tactile (même requête que le JS) : le lissage vient du scrub GSAP,
+   pas de double lissage par une transition CSS */
+@media (max-width: 760px), (hover: none) {
+  .reveal-words .word { transition: none; }
 }
 
 /* texte de présentation (SEO local) */

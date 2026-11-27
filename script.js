@@ -8,7 +8,7 @@
   const hasGSAP = typeof window.gsap !== "undefined" && typeof window.ScrollTrigger !== "undefined";
   // souris (ordinateur) : défilement lissé, survols, curseur
   const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-  // mobile / tactile (même requête que le CSS) : statement en un bloc
+  // mobile / tactile (même requête que le CSS) : distances et plages adaptées
   const mobile = window.matchMedia("(max-width: 760px), (hover: none)").matches;
 
   /* ---------- réglages du défilement et des apparitions ----------
@@ -22,7 +22,12 @@
     stagger: 0.07,         // apparitions : écart dans un lot (s)
     batchMax: 6,           // apparitions : unités max par lot
     interval: 0.1,         // apparitions : fenêtre qui forme un lot (s)
-    start: "top 88%"       // apparitions : départ (haut de l'unité à 88 % de l'écran)
+    start: "top 88%",      // apparitions : départ (haut de l'unité à 88 % de l'écran)
+    // statement mot par mot (scrub) ; téléphone : plage plus courte, léger lissage
+    // (le doigt n'est pas lissé par Lenis)
+    statementStart: mobile ? "top 85%" : "top 80%",
+    statementEnd: mobile ? "bottom 55%" : "bottom 60%",
+    statementScrub: mobile ? 0.5 : true
   };
 
   if (hasGSAP) {
@@ -266,7 +271,7 @@
      Le hero garde son entrée (playHero) ; les photos de l'équipe gardent leur
      parallaxe CSS (c'est le bloc .member qui apparaît, pas la photo). */
   const UNITS = [
-    ".section-head", mobile && ".statement__text", ".about__title", ".about__body > p",
+    ".section-head", ".about__title", ".about__body > p",
     ".service", ".pricing__title", ".pricing__table tr", ".services__note", ".stat",
     ".member", ".gallery__item", ".gallery__note", ".hours__head", ".hours__list li",
     ".address", ".map", ".faq__item", ".book__eyebrow", ".book__policy"
@@ -291,17 +296,26 @@
     });
   }
 
-  /* ---------- statement : fondu mot par mot (ordinateur) ----------
-     Mobile : le paragraphe entier est une unité des apparitions. */
-  const wordEl = !mobile && document.querySelector(".reveal-words");
+  /* ---------- statement : fondu mot par mot (ordinateur et téléphone) ----------
+     Lié au défilement (scrub). Ce paragraphe n'est pas dans les apparitions :
+     un seul mouvement par élément. Phrase complète en aria-label sur le <p>,
+     mots en aria-hidden ; espaces normaux entre les mots (copier-coller).
+     role="group" : un aria-label sur un <p> nu n'est pas exposé (testé : arbre
+     d'accessibilité vide), sur un groupe la phrase est lue en entier. */
+  const wordEl = document.querySelector(".reveal-words");
   if (wordEl) {
     const words = wordEl.textContent.trim().split(/\s+/);
+    wordEl.setAttribute("role", "group");
+    wordEl.setAttribute("aria-label", words.join(" "));
     wordEl.innerHTML = words
-      .map((w, i) => `<span class="word" style="--i:${i}">${w}</span>`).join(" ");
+      .map((w, i) => `<span class="word" aria-hidden="true" style="--i:${i}">${w}</span>`).join(" ");
     if (hasGSAP && !reduce) {
       gsap.to(wordEl.querySelectorAll(".word"), {
         opacity: 1, stagger: 0.06, ease: "none",
-        scrollTrigger: { trigger: wordEl, start: "top 80%", end: "bottom 60%", scrub: true }
+        scrollTrigger: {
+          trigger: wordEl,
+          start: MOTION.statementStart, end: MOTION.statementEnd, scrub: MOTION.statementScrub
+        }
       });
     } else {
       wordEl.querySelectorAll(".word").forEach((w) => (w.style.opacity = 1));

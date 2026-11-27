@@ -205,8 +205,8 @@
   /* ---------- reveal on scroll (IntersectionObserver) ---------- */
   // opacity + translateY uniquement ; will-change posé juste avant
   // l'animation et retiré à la fin (pas de calques GPU gardés en mémoire).
-  // Mobile / tactile (même requête que le CSS) : déclenchement plus tôt
-  // (threshold 0, marge + en bas), cascade de 70 ms entre frères (5 max),
+  // Mobile / tactile (même requête que le CSS) : montée + cascade de 70 ms
+  // entre frères (5 max),
   // classe .rv posée ici = le CSS ne cache rien si ce code ne tourne pas.
   // Hero, photos de l'équipe et galerie gardent l'ancienne révélation.
   const mobile = window.matchMedia("(max-width: 760px), (hover: none)").matches;
@@ -231,23 +231,31 @@
         if (en.isIntersecting) { playReveal(en.target); ioOld.unobserve(en.target); }
       });
     }, { threshold: 0.15, rootMargin: "0px 0px -8% 0px" });
-    const ioMob = mobile && new IntersectionObserver((entries) => {
-      const seen = new Map(); // rang dans la fournée, par parent
-      entries
-        .filter((en) => en.isIntersecting)
-        .sort((a, b) => (a.target.compareDocumentPosition(b.target) & 4 ? -1 : 1))
-        .forEach((en) => {
-          const rank = seen.get(en.target.parentElement) || 0;
-          seen.set(en.target.parentElement, rank + 1);
-          playReveal(en.target, Math.min(rank, 4) * 70);
-          ioMob.unobserve(en.target);
-        });
-    }, { threshold: 0, rootMargin: "0px 0px 8% 0px" });
+    // mobile : départ tardif par défaut (≈ 15 % visible, bas du viewport réduit
+    // de 10 %) pour que l'animation soit vue ; les blocs plus hauts que 70 % de
+    // l'écran (tarifs, FAQ, carte, horaires) partent dès qu'ils touchent le bas.
+    const mobObserver = (opts) => {
+      const io = new IntersectionObserver((entries) => {
+        const seen = new Map(); // rang dans la fournée, par parent
+        entries
+          .filter((en) => en.isIntersecting)
+          .sort((a, b) => (a.target.compareDocumentPosition(b.target) & 4 ? -1 : 1))
+          .forEach((en) => {
+            const rank = seen.get(en.target.parentElement) || 0;
+            seen.set(en.target.parentElement, rank + 1);
+            playReveal(en.target, Math.min(rank, 4) * 70);
+            io.unobserve(en.target);
+          });
+      }, opts);
+      return io;
+    };
+    const ioMob = mobile && mobObserver({ threshold: 0.15, rootMargin: "0px 0px -10% 0px" });
+    const ioMobTall = mobile && mobObserver({ threshold: 0, rootMargin: "0px 0px -5% 0px" });
     revealEls.forEach((el) => {
       if (ioMob && !el.matches(".member, .gallery__item")) {
         el.classList.add("rv");
         if (el.matches(".section-head__title, .about__title")) el.classList.add("rv-curtain");
-        ioMob.observe(el);
+        (el.offsetHeight > window.innerHeight * 0.7 ? ioMobTall : ioMob).observe(el);
       } else {
         ioOld.observe(el);
       }

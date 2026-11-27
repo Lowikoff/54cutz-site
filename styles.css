@@ -16,6 +16,11 @@
    ============================================================ */
 
 :root {
+  /* révélations mobiles liées au défilement (voir « RÉVÉLATIONS MOBILES ») :
+     plus le % est grand, plus l'animation démarre tard */
+  --rv-start: 14%;   /* 1er temps : début (0 % = l'élément touche le bas de l'écran) */
+  --rv-end:   46%;   /* 1er temps : fin */
+  --rv-step:   6%;   /* 2e temps = 1er temps décalé de ce pas */
   /* base — monochrome, from the white brushstroke logo */
   --black:   #08080a;
   --char:    #101013;
@@ -727,7 +732,10 @@ ul { list-style: none; }
    ============================================================ */
 .book {
   position: relative; padding: clamp(6rem, 16vw, 12rem) var(--pad);
-  text-align: center; overflow: hidden;
+  text-align: center;
+  /* overflow: clip (et non hidden) : hidden en ferait un conteneur de défilement
+     et les révélations liées au défilement (view()) de la section se figeraient */
+  overflow: hidden; overflow: clip;
   background:
     radial-gradient(circle at 30% 0%, rgba(255,45,143,0.18), transparent 55%),
     radial-gradient(circle at 70% 30%, rgba(85,102,255,0.16), transparent 55%),
@@ -1048,7 +1056,9 @@ body.legal-page { cursor: auto; }
    photos de l'équipe et galerie. L'avancement suit le doigt : aucun
    « pop ». Uniquement opacity + translate (propriété translate et non
    transform : le FLIP de la FAQ anime transform, les deux s'additionnent).
-   Plages communes : A = cover 0 → 32 %, B (2e temps d'un groupe) = 6 → 38 %.
+   Plages communes (variables --rv-* dans :root) : 1er temps = cover
+   --rv-start → --rv-end (14 → 46 %), 2e temps d'un groupe = + --rv-step
+   (20 → 52 %). Plus le % est grand, plus l'animation démarre tard.
    Repli sans support : IntersectionObserver (.rv plus haut).
    ============================================================ */
 @supports (animation-timeline: view()) {
@@ -1065,16 +1075,16 @@ body.legal-page { cursor: auto; }
       .faq__item, .gallery__note, .book__eyebrow, .book__policy {
         animation: rv-up var(--ease-out) both;
         animation-timeline: view();
-        animation-range: cover 0% cover 32%;
+        animation-range: cover var(--rv-start) cover var(--rv-end);
       }
       /* en-tête de section = un seul bloc : index + titre, puis l'accroche */
       .section-head { view-timeline: --rv-head block; }
       .section-head__index, .section-head__title { animation-timeline: --rv-head; }
-      .section-head__lead { animation-timeline: --rv-head; animation-range: cover 6% cover 38%; }
+      .section-head__lead { animation-timeline: --rv-head; animation-range: cover calc(var(--rv-start) + var(--rv-step)) cover calc(var(--rv-end) + var(--rv-step)); }
       /* présentation : titre puis texte, même timeline */
       .about { view-timeline: --rv-about block; }
-      .about__title { animation-timeline: --rv-about; animation-range: cover 0% cover 25%; }
-      .about__body { animation-timeline: --rv-about; animation-range: cover 4% cover 30%; }
+      .about__title { animation-timeline: --rv-about; animation-range: cover var(--rv-start) cover calc(var(--rv-start) + 25%); }
+      .about__body { animation-timeline: --rv-about; animation-range: cover calc(var(--rv-start) + 4%) cover calc(var(--rv-start) + 30%); }
       /* services : la ligne monte et son trait se dessine */
       .service { view-timeline: --rv-svc block; animation-timeline: --rv-svc; border-bottom-color: transparent; }
       .service::after {
@@ -1082,7 +1092,7 @@ body.legal-page { cursor: auto; }
         background: var(--line); transform-origin: 0 50%;
         animation: rv-line var(--ease-out) both;
         animation-timeline: --rv-svc;
-        animation-range: cover 6% cover 38%;
+        animation-range: cover calc(var(--rv-start) + var(--rv-step)) cover calc(var(--rv-end) + var(--rv-step));
       }
       /* statement : plage décalée mot par mot (posée par script.js) */
       .statement__text { view-timeline: --rv-stmt block; }
@@ -1090,7 +1100,7 @@ body.legal-page { cursor: auto; }
         transition: none;
         animation: rv-word linear both;
         animation-timeline: --rv-stmt;
-        animation-range: cover 6% cover 16%;
+        animation-range: cover calc(var(--rv-start) + var(--rv-step)) cover calc(var(--rv-start) + var(--rv-step) + 10%);
       }
     }
   }

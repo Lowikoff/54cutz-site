@@ -271,11 +271,12 @@
   if (wordEl) {
     const text = wordEl.textContent.trim();
     const words = text.split(/\s+/);
-    // défilement lié (CSS) : fenêtres de 10 % étalées de 6 à 46 % de la
-    // timeline du texte, chaque mot un peu après le précédent
+    // défilement lié (CSS) : fenêtres de 10 % étalées sur 30 % de la timeline
+    // du texte à partir de --rv-start + --rv-step (styles.css), chaque mot un
+    // peu après le précédent
     const step = 30 / Math.max(words.length - 1, 1);
     const range = (i) => scrollLinked
-      ? `;animation-range:cover ${(6 + i * step).toFixed(2)}% cover ${(16 + i * step).toFixed(2)}%` : "";
+      ? `;animation-range:cover calc(var(--rv-start) + var(--rv-step) + ${(i * step).toFixed(2)}%) cover calc(var(--rv-start) + var(--rv-step) + ${(10 + i * step).toFixed(2)}%)` : "";
     wordEl.innerHTML = words
       .map((w, i) => `<span class="word" style="--i:${i}${range(i)}">${w}</span>`).join(" ");
     if (scrollLinked) {

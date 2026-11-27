@@ -26,7 +26,7 @@ Sert le site comme Cloudflare (adresses sans .html, redirections 301, page 404).
 
 ## Stack
 - HTML / CSS / JS purs — zéro build, hébergé sur Cloudflare.
-- [GSAP + ScrollTrigger](https://gsap.com) hébergés dans `assets/js/` → parallaxe + révélation de texte.
+- [GSAP + ScrollTrigger](https://gsap.com) et [Lenis](https://lenis.dev) 1.3.29 hébergés dans `assets/js/` → apparitions au défilement, statement mot par mot, défilement lissé (ordinateur).
 - Polices (Anton, Bebas Neue, Inter, Fraunces) hébergées dans `assets/fonts/` : aucun appel à Google Fonts.
 - Animations natives : loader, curseur custom, marquee, compteurs, glow néon, reveal.
 - Accessible : respecte `prefers-reduced-motion`.
@@ -36,7 +36,7 @@ Sert le site comme Cloudflare (adresses sans .html, redirections 301, page 404).
 |---|---|
 | `index.html` | Structure + contenu |
 | `styles.css` | Design / responsive / animations CSS |
-| `script.js`  | Loader, curseur, scroll reveal, parallaxe, compteurs |
+| `script.js`  | Loader, curseur, Lenis, apparitions GSAP, compteurs |
 | `assets/`    | Logo, favicon, photos + vidéo (repris de 54cutz.com) |
 
 ## Médias (repris du site actuel, optimisés pour le web)
@@ -62,7 +62,7 @@ Sert le site comme Cloudflare (adresses sans .html, redirections 301, page 404).
 - [x] **SEO sur la page** (26/11/2026) : title « Barber à Perwez, Brabant wallon | Barbier 54cutz » (48 car.), description 149 car., meta keywords retirée ; H1 « Barber à Perwez » (même visuel, mêmes animations) ; texte « Votre barbier à Perwez, en Brabant wallon » sous le statement ; FAQ (5 questions) + JSON-LD `FAQPage` ; photos du hero, de l'équipe et de la galerie en `<img>` avec width/height, alt décrivant la photo, `loading="lazy"` sauf le hero. Sur téléphone en portrait, le hero charge `gallery14-portrait.webp` (recadrage central, 56 Ko au lieu de 265 Ko, rendu identique). ✔
 - [x] **Lighthouse mobile** (local, 26/11/2026) : Performance 93–94, Accessibilité 96 (100 sans le noindex), Bonnes pratiques 100, SEO 69 avec le noindex de la démo → **100** sur une copie sans noindex. ✔
 - [ ] **Animations sur un vrai iPhone** : vérifier le défilement (photos équipe, galerie, hero) et la barre d'adresse de Safari qui se replie.
-- [ ] **Révélations au scroll sur iPhone** (27/11/2026, système unique refait) : sentir le rythme (une unité = un mouvement) ; si trop ample/lent, ajuster `--rv-dist` / `--rv-dur`, voir « Révélations mobile ».
+- [ ] **Apparitions au scroll + Lenis** (27/11/2026, refaits : Lenis + GSAP ScrollTrigger) : sur iPhone, sentir le rythme des apparitions ; sur Mac (souris et trackpad), sentir le défilement lissé et les liens du menu. Réglages : voir « Défilement et apparitions ».
 - [x] **Horaires** : ligne du jour en magenta + « Aujourd'hui », badge « Ouvert maintenant · jusqu'à 20h » / « Fermé · ouvre mardi à 10h » (heure de Bruxelles, mis à jour chaque minute, caché sans JS). Horaires définis une fois dans `HOURS` (`script.js`) : si les horaires changent, modifier `HOURS`, la liste `.hours__list` et le JSON-LD. ✔
 
 ## Démo : indexation bloquée (en attente de validation par Isma)
@@ -204,8 +204,12 @@ horaires, adresse, email, conditions d'annulation, TVA, bios Ismaël & Wyatt.
 - Sans légende visible, une zone invisible (`.lb__sr`, `aria-live`) annonce « Photo 4 sur 10 : … » aux lecteurs d'écran à chaque changement de photo.
 - Testé WebKit + Chromium, 375 et 1280 px (ouverture, gestes, clavier, masquage après 2 s, mouvement réduit) : tout OK. Publié le 26/11/2026.
 
-## Révélations mobile (27/11/2026, refaites : un seul système)
-- ≤ 760 px ou `hover: none`, hors hero / équipe / galerie (inchangés) : chaque unité (en-tête de section, paragraphe, ligne de service / tarif / horaire, question FAQ, stat, carte, statement entier) apparaît une fois : opacity 0→1 + `translate` 18 px→0, .9 s, `cubic-bezier(.22,1,.36,1)`. Réglage en une ligne : `--rv-dist`, `--rv-dur`, `--rv-ease` dans `:root` de `styles.css`.
-- Un seul IntersectionObserver (`script.js`, « révélations mobiles ») : threshold .2, rootMargin `0 0 -12% 0`, cascade 60 ms entre frères du même lot (4 max) ; déjà à l'écran (chargement, ancre) : fondu .4 s sans montée ; filet 4 s après un défilement ; bloc > 70 % de l'écran jamais animé.
-- Classe `.m-rv` posée par le JS seulement (rien de caché sans JS), `prefers-reduced-motion` : rien d'animé. Supprimé : `animation-timeline` des révélations, `--rv-start/end/step`, repli `.rv`, statement mot par mot mobile (gardé sur ordinateur, GSAP), trait des services.
-- Testé WebKit 375 px tactile (45 unités, aucune à opacity 0 en fin de page, pas de débordement) ; 1280 px identique au HEAD précédent. **À sentir sur iPhone.**
+## Défilement et apparitions (27/11/2026 : Lenis + GSAP ScrollTrigger)
+- Remplace tous les systèmes maison (IntersectionObserver `.reveal` / `[data-reveal]`, « révélations mobiles » `.m-rv` et `--rv-*`, `quickUntil` / `markJump`, filet de 4 s). `.reveal` ne sert plus qu'au hero (`.hero .reveal`, entrée inchangée).
+- **Lenis** (`assets/js/lenis.min.js`, copié depuis `node_modules/lenis/dist`, ligne sourceMappingURL retirée) : seulement si `(hover: hover) and (pointer: fine)` et sans mouvement réduit. `lerp 0.1`, `smoothWheel`, `syncTouch: false`, `autoRaf: false` ; synchro officielle (`lenis.on('scroll', ScrollTrigger.update)`, `gsap.ticker`, `lagSmoothing(0)`). Règles CSS de `lenis.css` dans `styles.css`. Arrêté (`stop`/`start`) avec le menu et la visionneuse ; `data-lenis-prevent` sur la visionneuse et l'iframe de la carte. Mise à jour : `npm i -D lenis@1.3.x` puis recopier `lenis.min.js` (sans la ligne sourceMappingURL).
+- **Liens #ancre** : ordinateur = `lenis.scrollTo(cible, { offset: -header, duration: 1.2 })`, focus + hash gardés ; mobile = défilement JS d'avant (easeInOutCubic 600–1000 ms) ; menu mobile ouvert = saut derrière le menu puis fondu, inchangé.
+- **Apparitions** (`script.js`, « apparitions ») : un seul `ScrollTrigger.batch`, ordinateur et téléphone, sur `.section-head`, `.statement__text` (téléphone ; ordinateur = mot par mot scrub, inchangé), `.about__title`, `.about__body > p`, `.service`, `.pricing__title`, lignes du tableau des tarifs, `.services__note`, `.stat`, `.member` (le bloc, pas la photo), `.gallery__item`, `.gallery__note`, `.hours__head`, lignes d'horaires, `.address`, `.map`, `.faq__item`, `.book__eyebrow`, `.book__policy`. opacity 0→1 + montée 28 px (ordinateur, .9 s) / 20 px (téléphone, .8 s), `power3.out`, cascade 70 ms par lot (6 max), départ à 88 % de l'écran, une seule fois ; dépassé d'un coup (ancre) : visible aussitôt ; `clearProps` à la fin. Styles posés par le JS seulement : sans JS ou en mouvement réduit, tout est visible.
+- **Réglages** (constante `MOTION` en haut de `script.js`) : `lerp` 0.1 (Lenis) · `anchorDuration` 1.2 s (ancres, ordinateur) · `y` 28 px ordinateur / 20 px téléphone · `duration` .9 s / .8 s · `ease` power3.out · `stagger` .07 s · `batchMax` 6 · `interval` .1 s · `start` « top 88% ». `ScrollTrigger.config({ ignoreMobileResize: true })` gardé ; `ScrollTrigger.refresh()` après `document.fonts.ready` et après le load (images).
+- FAQ : l'apparition se termine par `clearProps: "opacity,transform"`, le FLIP retrouve un transform vide. Galerie / équipe : seulement opacity + y, le grisé au repos et la couleur au survol (transition de filter, CSS) restent intacts.
+- Inchangés : hero, parallaxe CSS (hero + photos de l'équipe), filtres photo, visionneuse, FAQ (FLIP), marquee, menu mobile.
+- Testé avec `npx wrangler dev` : Chromium 1280 (Lenis actif, molette lissée, parallaxe OK, ancre à 0 px sous le header, Lenis arrêté pendant la visionneuse puis relancé), Firefox 1280 (idem), WebKit + Chromium 375 tactile (pas de Lenis, toutes les unités visibles en fin de page, menu → ancre OK), mouvement réduit (pas de Lenis, rien de caché). Aucune erreur console. **À sentir sur un vrai iPhone et sur Mac.**

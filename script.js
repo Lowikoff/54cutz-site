@@ -5,7 +5,50 @@
   "use strict";
 
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const hasGSAP = typeof window.gsap !== "undefined";
+  const hasGSAP = typeof window.gsap !== "undefined" && typeof window.ScrollTrigger !== "undefined";
+  // souris (ordinateur) : défilement lissé, survols, curseur
+  const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  // mobile / tactile (même requête que le CSS) : statement en un bloc
+  const mobile = window.matchMedia("(max-width: 760px), (hover: none)").matches;
+
+  /* ---------- réglages du défilement et des apparitions ----------
+     Tout le rythme se règle ici (repris dans le README). */
+  const MOTION = {
+    lerp: 0.1,             // Lenis : lissage de la molette (ordinateur)
+    anchorDuration: 1.2,   // Lenis : durée du défilement vers une ancre (s)
+    y: mobile ? 20 : 28,   // apparitions : montée (px)
+    duration: mobile ? 0.8 : 0.9, // apparitions : durée (s)
+    ease: "power3.out",    // apparitions : courbe
+    stagger: 0.07,         // apparitions : écart dans un lot (s)
+    batchMax: 6,           // apparitions : unités max par lot
+    interval: 0.1,         // apparitions : fenêtre qui forme un lot (s)
+    start: "top 88%"       // apparitions : départ (haut de l'unité à 88 % de l'écran)
+  };
+
+  if (hasGSAP) {
+    gsap.registerPlugin(ScrollTrigger);
+    // pas de recalcul quand la barre d'adresse de Safari se replie
+    ScrollTrigger.config({ ignoreMobileResize: true });
+    // positions recalculées une fois les polices et les images chargées
+    if (document.fonts) document.fonts.ready.then(() => ScrollTrigger.refresh());
+    window.addEventListener("load", () => ScrollTrigger.refresh(), { once: true });
+  }
+
+  /* ---------- défilement lissé (Lenis, ordinateur uniquement) ----------
+     Souris + pas de mouvement réduit. Au tactile, défilement natif (élan du
+     téléphone intact). Lenis garde le scroll natif de la fenêtre : le
+     parallaxe CSS (animation-timeline) suit tel quel. Une seule boucle :
+     celle de GSAP (synchro officielle Lenis ↔ ScrollTrigger). */
+  let lenis = null;
+  if (fine && !reduce && hasGSAP && typeof window.Lenis !== "undefined") {
+    lenis = new Lenis({ lerp: MOTION.lerp, smoothWheel: true, syncTouch: false, autoRaf: false });
+    lenis.on("scroll", ScrollTrigger.update);
+    gsap.ticker.add((t) => lenis.raf(t * 1000));
+    gsap.ticker.lagSmoothing(0);
+  }
+  // page bloquée (menu, visionneuse) : Lenis arrêté aussi
+  const lockScroll = (on) => { if (lenis) { if (on) lenis.stop(); else lenis.start(); } };
+  const jumpTo = (y) => { if (lenis) lenis.scrollTo(y, { immediate: true, force: true }); else window.scrollTo(0, y); };
 
   /* ---------- year ---------- */
   document.getElementById("year").textContent = new Date().getFullYear();
@@ -90,6 +133,7 @@
     const open = nav.classList.toggle("is-open");
     burger.setAttribute("aria-expanded", String(open));
     document.body.style.overflow = open ? "hidden" : "";
+    lockScroll(open);
   });
   /* ---------- liens vers une section de la page ----------
      Défilement en JS plutôt que scroll-behavior: smooth (Safari le fait
@@ -130,10 +174,6 @@
   const easeInOutCubic = (t) => (t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
   const STOP_EVENTS = ["wheel", "touchstart", "mousedown", "keydown"];
   let scrollRun = null;
-  // révélations mobiles : jusqu'à cet instant, ce qui entre à l'écran vient
-  // d'un saut (ancre, chargement) → fondu court sans montée
-  let quickUntil = performance.now() + 600;
-  const markJump = (ms) => { quickUntil = Math.max(quickUntil, performance.now() + ms); };
   const stopScroll = () => {
     if (!scrollRun) return;
     cancelAnimationFrame(scrollRun.raf);
@@ -142,11 +182,16 @@
   };
   const smoothScrollTo = (el) => {
     stopScroll();
+    // ordinateur : Lenis (interrompu par la molette, comme le défilement maison)
+    if (lenis) {
+      const hero = el.id === "hero";
+      lenis.scrollTo(hero ? 0 : el, { offset: hero ? 0 : -headerH(), duration: MOTION.anchorDuration, onComplete: () => focusTarget(el) });
+      return;
+    }
     const startY = window.scrollY;
     const dist = Math.abs(targetY(el) - startY);
     if (reduce || dist < 2) { window.scrollTo(0, targetY(el)); focusTarget(el); return; }
     const duration = Math.min(1000, Math.max(600, 450 + dist * 0.12));
-    markJump(duration + 300);
     const t0 = performance.now();
     const run = { raf: 0 };
     const step = (now) => {
@@ -174,15 +219,16 @@
       e.preventDefault();
       stopScroll();
       document.body.style.overflow = "";
+      lockScroll(false);
       nav.classList.add("is-scrolled"); // hauteur d'arrivée du header
-      markJump(600);
-      window.scrollTo(0, targetY(target));
+      jumpTo(targetY(target));
       setHash(href);
       focusTarget(target);
     }
     nav.classList.remove("is-open");
     burger.setAttribute("aria-expanded", "false");
     document.body.style.overflow = "";
+    lockScroll(false);
   });
 
   // tous les autres liens #ancre de la page (hero, logo, FAQ, menu ordinateur…)
@@ -204,111 +250,55 @@
     const target = anchorTarget(location.hash);
     // après le load (le navigateur fait lui-même son saut natif à ce moment-là)
     if (target) window.addEventListener("load", () => requestAnimationFrame(() => {
-      if (!scrollRun) { markJump(600); window.scrollTo(0, targetY(target)); }
+      if (!scrollRun) jumpTo(targetY(target));
     }), { once: true });
   }
 
-  /* ---------- reveal on scroll (IntersectionObserver) ---------- */
-  // Ordinateur : .reveal / [data-reveal] (montée 40 px, .9 s).
-  // Mobile / tactile (même requête que le CSS) : hero, photos de l'équipe et
-  // galerie gardent cette révélation ; tout le reste est piloté par les
-  // « révélations mobiles » plus bas (on leur retire .reveal / data-reveal :
-  // un seul système par élément).
-  // will-change posé juste avant l'animation et retiré à la fin.
-  const mobile = window.matchMedia("(max-width: 760px), (hover: none)").matches;
-  if (mobile) {
-    document.querySelectorAll(".reveal:not(.hero .reveal), [data-reveal]:not(.member, .gallery__item)")
-      .forEach((el) => { el.classList.remove("reveal"); el.removeAttribute("data-reveal"); });
-  }
-  const revealEls = document.querySelectorAll(".reveal:not(.hero .reveal), [data-reveal]");
-  if ("IntersectionObserver" in window && !reduce) {
-    const ioOld = new IntersectionObserver((entries) => {
-      entries.forEach((en) => {
-        if (!en.isIntersecting) return;
-        const el = en.target;
-        ioOld.unobserve(el);
-        el.style.willChange = "opacity, transform";
-        const done = () => { el.style.willChange = ""; };
-        el.addEventListener("transitionend", (e) => {
-          if (e.target === el && e.propertyName === "transform") done();
-        });
-        setTimeout(done, 1500); // filet si transitionend ne vient pas
-        requestAnimationFrame(() => el.classList.add("is-in"));
-      });
-    }, { threshold: 0.15, rootMargin: "0px 0px -8% 0px" });
-    revealEls.forEach((el) => ioOld.observe(el));
-  } else {
-    revealEls.forEach((el) => el.classList.add("is-in"));
-  }
-
-  /* ---------- révélations mobiles (un seul système) ----------
-     Chaque unité visuelle (en-tête de section, paragraphe, ligne de service,
-     de tarif, d'horaire, question de FAQ, stat, carte, statement entier)
-     apparaît une fois, avec le même mouvement : opacity 0 → 1 + montée
-     (--rv-dist / --rv-dur / --rv-ease, en tête de styles.css).
-     Un seul observer : 20 % visible, bas de l'écran réduit de 12 %.
-     Cascade : 60 ms entre frères arrivés dans le même lot, 4 au plus.
-     Déjà à l'écran au chargement ou après un clic sur une ancre : fondu
-     court (.4 s) sans montée. .m-rv n'est posée qu'ici : sans JS, rien
-     n'est caché ; mouvement réduit : rien n'est posé. Bloc plus haut que
-     70 % de l'écran : jamais animé en entier (laissé visible).
-     Filet : 4 s après un défilement, tout ce qui est encore caché alors
-     qu'il est déjà passé dans l'écran apparaît en fondu. */
-  const RV_UNITS = ".section-head, .statement__text, .about__title, .about__body > p, " +
-    ".service, .pricing__title, .pricing__table tr, .services__note, .stat, " +
-    ".hours__head, .hours__list li, .address, .map, .faq__item, .gallery__note, " +
-    ".book__eyebrow, .book__policy";
-  if (mobile && !reduce && "IntersectionObserver" in window) {
-    const maxH = window.innerHeight * 0.7;
-    const pending = new Set([...document.querySelectorAll(RV_UNITS)].filter((el) => el.offsetHeight <= maxH));
-    let io = null;
-    const show = (el, quick, delay) => {
-      pending.delete(el);
-      io.unobserve(el);
-      if (quick) el.classList.add("m-rv--fade");
-      if (delay) el.style.transitionDelay = delay + "ms";
-      el.style.willChange = "opacity, translate";
-      requestAnimationFrame(() => el.classList.add("is-in"));
-      setTimeout(() => { el.style.willChange = ""; el.style.transitionDelay = ""; },
-        delay + (quick ? 500 : 1000));
-    };
-    io = new IntersectionObserver((entries) => {
-      const quick = performance.now() < quickUntil;
-      const rank = new Map(); // rang dans le lot, par parent
-      entries
-        .filter((en) => en.isIntersecting)
-        .sort((a, b) => (a.target.compareDocumentPosition(b.target) & 4 ? -1 : 1))
-        .forEach((en) => {
-          const p = en.target.parentElement, r = rank.get(p) || 0;
-          rank.set(p, r + 1);
-          show(en.target, quick, quick ? 0 : Math.min(r, 3) * 60);
-        });
-    }, { threshold: 0.2, rootMargin: "0px 0px -12% 0px" });
-    pending.forEach((el) => { el.classList.add("m-rv"); io.observe(el); });
-
-    let netTimer = 0;
-    const sweep = () => {
-      netTimer = 0;
-      const line = window.innerHeight * 0.75;
-      pending.forEach((el) => { if (el.getBoundingClientRect().top < line) show(el, true, 0); });
-      if (!pending.size) window.removeEventListener("scroll", armNet);
-    };
-    const armNet = () => { if (!netTimer) netTimer = setTimeout(sweep, 4000); };
-    window.addEventListener("scroll", armNet, { passive: true });
-    armNet();
+  /* ---------- apparitions au défilement (GSAP ScrollTrigger) ----------
+     Un seul système, ordinateur et téléphone. Chaque unité (en-tête de
+     section, paragraphe, ligne de service, de tarif, d'horaire, stat, carte
+     de l'équipe, photo de la galerie, question de FAQ…) apparaît une fois :
+     opacity 0 → 1 + montée, power3.out. ScrollTrigger.batch regroupe ce qui
+     entre à l'écran en même temps : cascade de 70 ms dans le lot.
+     Styles posés ici seulement : sans JS ou en mouvement réduit, tout est
+     visible. clearProps à la fin : plus aucun style inline (la FAQ anime
+     transform, la visionneuse lit la position des miniatures).
+     Le hero garde son entrée (playHero) ; les photos de l'équipe gardent leur
+     parallaxe CSS (c'est le bloc .member qui apparaît, pas la photo). */
+  const UNITS = [
+    ".section-head", mobile && ".statement__text", ".about__title", ".about__body > p",
+    ".service", ".pricing__title", ".pricing__table tr", ".services__note", ".stat",
+    ".member", ".gallery__item", ".gallery__note", ".hours__head", ".hours__list li",
+    ".address", ".map", ".faq__item", ".book__eyebrow", ".book__policy"
+  ].filter(Boolean).join(", ");
+  if (hasGSAP && !reduce) {
+    const units = gsap.utils.toArray(UNITS);
+    // opacity + y seulement (jamais filter : grisé / couleur au survol gérés
+    // en CSS) ; clearProps rend transform à la FAQ (FLIP) et à la visionneuse
+    gsap.set(units, { opacity: 0, y: MOTION.y });
+    const show = (batch) => gsap.to(batch, {
+      opacity: 1, y: 0, duration: MOTION.duration, ease: MOTION.ease,
+      stagger: MOTION.stagger, overwrite: true, clearProps: "opacity,transform"
+    });
+    ScrollTrigger.batch(units, {
+      start: MOTION.start,
+      interval: MOTION.interval, // ce qui entre dans cette fenêtre forme un même lot
+      batchMax: MOTION.batchMax,
+      once: true,
+      onEnter: show,
+      // dépassé d'un coup (saut vers une ancre) : visible tout de suite
+      onLeave: (batch) => gsap.set(batch, { opacity: 1, y: 0, clearProps: "opacity,transform" })
+    });
   }
 
   /* ---------- statement : fondu mot par mot (ordinateur) ----------
-     Mobile : le paragraphe entier est une unité des révélations mobiles. */
+     Mobile : le paragraphe entier est une unité des apparitions. */
   const wordEl = !mobile && document.querySelector(".reveal-words");
   if (wordEl) {
     const words = wordEl.textContent.trim().split(/\s+/);
     wordEl.innerHTML = words
       .map((w, i) => `<span class="word" style="--i:${i}">${w}</span>`).join(" ");
     if (hasGSAP && !reduce) {
-      gsap.registerPlugin(ScrollTrigger);
-      // pas de recalcul quand la barre d'adresse de Safari se replie
-      ScrollTrigger.config({ ignoreMobileResize: true });
       gsap.to(wordEl.querySelectorAll(".word"), {
         opacity: 1, stagger: 0.06, ease: "none",
         scrollTrigger: { trigger: wordEl, start: "top 80%", end: "bottom 60%", scrub: true }
@@ -443,7 +433,6 @@
   /* ---------- custom cursor ---------- */
   const cursor = document.getElementById("cursor");
   const dot = document.getElementById("cursorDot");
-  const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
   if (fine && cursor && dot) {
     // caché tant que la souris n'a pas bougé (sinon il apparaît dans le coin haut-gauche)
@@ -477,6 +466,7 @@
       iframe.title = "Plan — 54cutz Perwez";
       iframe.src = mapBtn.dataset.src;
       iframe.referrerPolicy = "no-referrer-when-downgrade";
+      iframe.setAttribute("data-lenis-prevent", "");
       mapBtn.replaceWith(iframe);
     });
   }
@@ -777,6 +767,7 @@
       document.documentElement.style.overflow = "hidden";
       if (sbw > 0) document.documentElement.style.paddingRight = sbw + "px";
       setInert(true);
+      lockScroll(true);
       setStage(0, 0); layout(); updateUI();
       btnClose.focus({ preventScroll: true });
       wake();
@@ -809,6 +800,7 @@
         document.documentElement.style.overflow = "";
         document.documentElement.style.paddingRight = "";
         setInert(false);
+        lockScroll(false);
         a.focus({ preventScroll: true });
       };
       if (reduce) { fade([lb], 1, 0, 200, 0, "forwards")[0].onfinish = end; return; }

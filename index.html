@@ -49,7 +49,7 @@
 
   <link rel="stylesheet" href="styles.css" />
   <!-- Sans JavaScript : tout est visible (ni loader, ni blocs à opacity 0) -->
-  <noscript><style>.loader{display:none}.reveal,[data-reveal]{opacity:1!important;transform:none!important}.hero__title .line>span{transform:none!important}</style></noscript>
+  <noscript><style>.loader{display:none}.reveal{opacity:1!important;transform:none!important}.hero__title .line>span{transform:none!important}</style></noscript>
 
   <!-- Structured data : local SEO -->
   <script type="application/ld+json">
@@ -358,8 +358,8 @@
       </p>
 
       <div class="about">
-        <h2 class="about__title reveal">Votre barbier à Perwez, en Brabant wallon</h2>
-        <div class="about__body reveal">
+        <h2 class="about__title">Votre barbier à Perwez, en Brabant wallon</h2>
+        <div class="about__body">
           <p>
             <strong>54cutz est un barber shop à Perwez, en Brabant wallon, au 45 Chaussée de Charleroi.</strong>
             Vos barbiers Ismaël, Wyatt, Raphaël et Bastien vous accueillent du mardi au dimanche,
@@ -385,36 +385,36 @@
     <section class="services" id="services">
       <div class="section-head">
         <span class="section-head__index">01</span>
-        <h2 class="section-head__title reveal">Nos services</h2>
-        <p class="section-head__lead reveal">Du classique au sur-mesure.</p>
+        <h2 class="section-head__title">Nos services</h2>
+        <p class="section-head__lead">Du classique au sur-mesure.</p>
       </div>
 
       <ul class="services__list">
-        <li class="service" data-reveal>
+        <li class="service">
           <div class="service__num">01</div>
           <h3 class="service__name">Coupe</h3>
           <p class="service__desc">Coupe nette et précise, finitions soignées au rasoir.</p>
           <span class="service__price" data-price>dès 25 €</span>
         </li>
-        <li class="service" data-reveal>
+        <li class="service">
           <div class="service__num">02</div>
           <h3 class="service__name">Barbe</h3>
           <p class="service__desc">Taille, contours et soin pour une barbe parfaitement dessinée.</p>
           <span class="service__price" data-price>dès 15 €</span>
         </li>
-        <li class="service" data-reveal>
+        <li class="service">
           <div class="service__num">03</div>
           <h3 class="service__name">Coupe + Barbe</h3>
           <p class="service__desc">Le combo complet pour un look impeccable de la tête au menton.</p>
           <span class="service__price" data-price>dès 35 €</span>
         </li>
-        <li class="service" data-reveal>
+        <li class="service">
           <div class="service__num">04</div>
           <h3 class="service__name">Transformation</h3>
           <p class="service__desc">Changement de style en profondeur, conseil et exécution.</p>
           <span class="service__price" data-price>40 €</span>
         </li>
-        <li class="service service--vip" data-reveal>
+        <li class="service service--vip">
           <div class="service__num">05</div>
           <div class="service__tag">Premium</div>
           <h3 class="service__name">Service V.I.P</h3>
@@ -422,7 +422,7 @@
           <span class="service__price" data-price>60 €</span>
         </li>
       </ul>
-      <div class="pricing" id="tarifs" data-reveal>
+      <div class="pricing" id="tarifs">
         <h3 class="pricing__title">Tarifs par barber</h3>
         <div class="pricing__scroll">
           <table class="pricing__table">
@@ -454,20 +454,20 @@
 
     <!-- ===== STATS ===== -->
     <section class="stats">
-      <div class="stat" data-reveal>
+      <div class="stat">
         <span class="stat__num" data-count="3">0</span>
         <span class="stat__plus">+</span>
         <span class="stat__label">ans d'expérience</span>
       </div>
-      <div class="stat" data-reveal>
+      <div class="stat">
         <span class="stat__num" data-count="5">0</span>
         <span class="stat__label">services</span>
       </div>
-      <div class="stat" data-reveal>
+      <div class="stat">
         <span class="stat__num" data-count="4">0</span>
         <span class="stat__label">barbers passionnés</span>
       </div>
-      <div class="stat" data-reveal>
+      <div class="stat">
         <span class="stat__num" data-count="100">0</span>
         <span class="stat__plus">%</span>
         <span class="stat__label">sens du détail</span>
@@ -478,12 +478,12 @@
     <section class="team" id="team">
       <div class="section-head">
         <span class="section-head__index">02</span>
-        <h2 class="section-head__title reveal">L'équipe</h2>
-        <p class="section-head__lead reveal">Quatre barbers, une même passion.</p>
+        <h2 class="section-head__title">L'équipe</h2>
+        <p class="section-head__lead">Quatre barbers, une même passion.</p>
       </div>
 
       <div class="team__grid">
-        <article class="member" data-reveal>
+        <article class="member">
           <div class="member__photo">
             <div class="member__photo-zoom">
               <img class="member__photo-img" src="assets/images/isma.jpg" width="900" height="1350"
@@ -500,7 +500,7 @@
           </div>
         </article>
 
-        <article class="member" data-reveal>
+        <article class="member">
           <div class="member__photo">
             <div class="member__photo-zoom">
               <img class="member__photo-img" src="assets/images/wyatt.jpg" width="900" height="1350"
@@ -517,7 +517,7 @@
           </div>
         </article>
 
-        <article class="member member--ph" data-reveal>
+        <article class="member member--ph">
           <div class="member__photo member__photo--ph" aria-hidden="true">
             <span class="member__initial">R</span>
           </div>
@@ -528,7 +528,7 @@
           </div>
         </article>
 
-        <article class="member member--ph" data-reveal>
+        <article class="member member--ph">
           <div class="member__photo member__photo--ph" aria-hidden="true">
             <span class="member__initial">B</span>
           </div>
@@ -545,8 +545,8 @@
     <section class="gallery" id="gallery">
       <div class="section-head">
         <span class="section-head__index">03</span>
-        <h2 class="section-head__title reveal">Galerie</h2>
-        <p class="section-head__lead reveal">Le travail parle de lui-même.</p>
+        <h2 class="section-head__title">Galerie</h2>
+        <p class="section-head__lead">Le travail parle de lui-même.</p>
       </div>
 
       <!-- Mosaïque : ordinateur = 12 colonnes en 2 blocs (une grande photo + une large
@@ -555,70 +555,70 @@
       <div class="gallery__wrap">
       <div class="gallery__grid">
         <a class="gallery__item gallery__item--g6" href="assets/images/gallery/g6-1600.webp"
-           data-w="933" data-h="1400" data-reveal data-cursor>
+           data-w="933" data-h="1400" data-cursor>
           <img src="assets/images/gallery/g6-600.webp"
                srcset="assets/images/gallery/g6-600.webp 600w, assets/images/gallery/g6-1600.webp 933w"
                sizes="(max-width: 760px) 50vw, 38.0vw" width="600" height="900"
                alt="Le salon 54cutz baigné de néon magenta : fauteuils de barbier, miroirs ronds rétroéclairés et plafond en hexagones lumineux" loading="lazy" decoding="async" />
         </a>
         <a class="gallery__item gallery__item--g3" href="assets/images/gallery/g3-1600.webp"
-           data-w="1400" data-h="598" data-reveal data-cursor>
+           data-w="1400" data-h="598" data-cursor>
           <img src="assets/images/gallery/g3-600.webp"
                srcset="assets/images/gallery/g3-600.webp 600w, assets/images/gallery/g3-1600.webp 1400w"
                sizes="(max-width: 760px) 100vw, 53.2vw" width="600" height="256"
                alt="Enseigne néon 54CUTZ rose et bleue sur un mur de briques" loading="lazy" decoding="async" />
         </a>
         <a class="gallery__item gallery__item--g5" href="assets/images/gallery/g5-1600.webp"
-           data-w="1067" data-h="1600" data-reveal data-cursor>
+           data-w="1067" data-h="1600" data-cursor>
           <img src="assets/images/gallery/g5-600.webp"
                srcset="assets/images/gallery/g5-600.webp 600w, assets/images/gallery/g5-1600.webp 1067w"
                sizes="(max-width: 760px) 50vw, 15.2vw" width="600" height="900"
                alt="Le salon en lumière du jour : fauteuils de barbier noir et or, anneaux lumineux, plafond en hexagones et mur végétal au néon « Time to shine! »" loading="lazy" decoding="async" />
         </a>
         <a class="gallery__item gallery__item--g9" href="assets/images/gallery/g9-1600.webp"
-           data-w="1400" data-h="933" data-reveal data-cursor>
+           data-w="1400" data-h="933" data-cursor>
           <img src="assets/images/gallery/g9-600.webp"
                srcset="assets/images/gallery/g9-600.webp 600w, assets/images/gallery/g9-1600.webp 1400w"
                sizes="(max-width: 760px) 100vw, 22.8vw" width="600" height="400"
                alt="Client de profil après une coupe dégradée et une barbe taillée" loading="lazy" decoding="async" />
         </a>
         <a class="gallery__item gallery__item--g8" href="assets/images/gallery/g8-1600.webp"
-           data-w="1067" data-h="1600" data-reveal data-cursor>
+           data-w="1067" data-h="1600" data-cursor>
           <img src="assets/images/gallery/g8-600.webp"
                srcset="assets/images/gallery/g8-600.webp 600w, assets/images/gallery/g8-1600.webp 1067w"
                sizes="(max-width: 760px) 50vw, 15.2vw" width="600" height="900"
                alt="Le coin d'attente : banquettes noires sous des néons bleus et roses, réfrigérateur à boissons au fond" loading="lazy" decoding="async" />
         </a>
         <a class="gallery__item gallery__item--g2" href="assets/images/gallery/g2-1600.webp"
-           data-w="1600" data-h="1067" data-reveal data-cursor>
+           data-w="1600" data-h="1067" data-cursor>
           <img src="assets/images/gallery/g2-600.webp"
                srcset="assets/images/gallery/g2-600.webp 600w, assets/images/gallery/g2-1600.webp 1600w"
                sizes="(max-width: 760px) 100vw, 60.8vw" width="600" height="400"
                alt="Néon rose « Time to shine! » allumé dans la pénombre du salon" loading="lazy" decoding="async" />
         </a>
         <a class="gallery__item gallery__item--g11" href="assets/images/gallery/g11-1600.webp"
-           data-w="933" data-h="1400" data-reveal data-cursor>
+           data-w="933" data-h="1400" data-cursor>
           <img src="assets/images/gallery/g11-600.webp"
                srcset="assets/images/gallery/g11-600.webp 600w, assets/images/gallery/g11-1600.webp 933w"
                sizes="(max-width: 760px) 50vw, 22.8vw" width="600" height="900"
                alt="Un barber aux gants roses travaille les contours d'un client sous un anneau lumineux" loading="lazy" decoding="async" />
         </a>
         <a class="gallery__item gallery__item--g12" href="assets/images/gallery/g12-1600.webp"
-           data-w="933" data-h="1400" data-reveal data-cursor>
+           data-w="933" data-h="1400" data-cursor>
           <img src="assets/images/gallery/g12-600.webp"
                srcset="assets/images/gallery/g12-600.webp 600w, assets/images/gallery/g12-1600.webp 933w"
                sizes="(max-width: 760px) 50vw, 22.8vw" width="600" height="900"
                alt="Un barber termine la coupe d'un client installé dans un fauteuil noir et or" loading="lazy" decoding="async" />
         </a>
         <a class="gallery__item gallery__item--g4" href="assets/images/gallery/g4-1600.webp"
-           data-w="1067" data-h="1600" data-reveal data-cursor>
+           data-w="1067" data-h="1600" data-cursor>
           <img src="assets/images/gallery/g4-600.webp"
                srcset="assets/images/gallery/g4-600.webp 600w, assets/images/gallery/g4-1600.webp 1067w"
                sizes="(max-width: 760px) 50vw, 15.2vw" width="600" height="900"
                alt="Fauteuil de barbier capitonné noir et or, au pied doré, dans le salon 54cutz" loading="lazy" decoding="async" />
         </a>
         <a class="gallery__item gallery__item--g13" href="assets/images/gallery/g13-1600.webp"
-           data-w="1067" data-h="1600" data-reveal data-cursor>
+           data-w="1067" data-h="1600" data-cursor>
           <img src="assets/images/gallery/g13-600.webp"
                srcset="assets/images/gallery/g13-600.webp 600w, assets/images/gallery/g13-1600.webp 1067w"
                sizes="(max-width: 760px) 100vw, 30.4vw" width="600" height="900"
@@ -626,7 +626,7 @@
         </a>
       </div>
       </div>
-      <p class="gallery__note reveal">
+      <p class="gallery__note">
         Plus de réalisations sur
         <a class="link-underline" data-cursor href="https://instagram.com/54cutz_" target="_blank" rel="noopener">Instagram&nbsp;@54cutz_</a>
       </p>
@@ -636,11 +636,11 @@
     <section class="infos" id="infos">
       <div class="section-head">
         <span class="section-head__index">04</span>
-        <h2 class="section-head__title reveal">Horaires &amp; accès</h2>
+        <h2 class="section-head__title">Horaires &amp; accès</h2>
       </div>
 
       <div class="infos__grid">
-        <div class="hours" data-reveal>
+        <div class="hours">
           <div class="hours__head">
             <h3 class="hours__title">Horaires</h3>
             <!-- Rempli par script.js (heure de Bruxelles) ; reste caché sans JS -->
@@ -668,7 +668,7 @@
           </div>
         </div>
 
-        <div class="map" data-reveal>
+        <div class="map">
           <!-- Carte chargée seulement au clic : Google Maps peut déposer des cookies (RGPD) -->
           <button type="button" class="map__load" id="mapLoad" data-cursor
                   data-src="https://maps.google.com/maps?q=Chauss%C3%A9e%20de%20Charleroi%2045%2C%201360%20Perwez&t=&z=15&ie=UTF8&iwloc=&output=embed">
@@ -685,26 +685,26 @@
     <section class="faq" id="faq">
       <div class="section-head">
         <span class="section-head__index">05</span>
-        <h2 class="section-head__title reveal">Questions fréquentes</h2>
+        <h2 class="section-head__title">Questions fréquentes</h2>
       </div>
       <div class="faq__list">
-        <details class="faq__item" data-reveal>
+        <details class="faq__item">
           <summary class="faq__q">Comment prendre rendez-vous chez 54cutz ?<span class="faq__icon" aria-hidden="true"></span></summary>
           <div class="faq__a"><p>En ligne, sur <a class="link-underline" href="https://salonkee.be/salon/54-cutz?lang=fr" target="_blank" rel="noopener">Salonkee</a> : choisissez votre barber, la prestation et le créneau. Le salon ne répond pas au téléphone pendant les heures d'ouverture ; pour une question, écrivez-nous sur Instagram, TikTok ou à <a class="link-underline" href="mailto:54cutz@gmail.com">54cutz@gmail.com</a>.</p></div>
         </details>
-        <details class="faq__item" data-reveal>
+        <details class="faq__item">
           <summary class="faq__q">Combien coûte une coupe ?<span class="faq__icon" aria-hidden="true"></span></summary>
           <div class="faq__a"><p>Coupe dès 25&nbsp;€, barbe dès 15&nbsp;€, coupe + barbe dès 35&nbsp;€, transformation 40&nbsp;€ et service V.I.P 60&nbsp;€. Le prix dépend de la prestation et du barber : voir le <a class="link-underline" href="#tarifs">tableau des tarifs</a>.</p></div>
         </details>
-        <details class="faq__item" data-reveal>
+        <details class="faq__item">
           <summary class="faq__q">Quels sont vos horaires ?<span class="faq__icon" aria-hidden="true"></span></summary>
           <div class="faq__a"><p>Du mardi au vendredi de 10h à 20h, le samedi et le dimanche de 10h à 15h. Le salon est fermé le lundi.</p></div>
         </details>
-        <details class="faq__item" data-reveal>
+        <details class="faq__item">
           <summary class="faq__q">Que se passe-t-il si j'annule mon rendez-vous ?<span class="faq__icon" aria-hidden="true"></span></summary>
           <div class="faq__a"><p>Si vous annulez moins de 24&nbsp;h avant, 50&nbsp;% du prix de la prestation est dû. Moins de 12&nbsp;h avant, ou en cas d'absence, la totalité du prix est due.</p></div>
         </details>
-        <details class="faq__item" data-reveal>
+        <details class="faq__item">
           <summary class="faq__q">Où se trouve le salon ?<span class="faq__icon" aria-hidden="true"></span></summary>
           <div class="faq__a"><p>Chaussée de Charleroi 45, 1360 Perwez (Brabant wallon). Vous pouvez vous garer devant la vitrine. <a class="link-underline" href="#infos">Voir la carte</a>.</p></div>
         </details>
@@ -715,14 +715,14 @@
     <!-- ===== BOOKING CTA ===== -->
     <section class="book" id="book">
       <div class="book__inner">
-        <p class="book__eyebrow reveal">Prêt pour votre prochaine coupe ?</p>
+        <p class="book__eyebrow">Prêt pour votre prochaine coupe ?</p>
         <h2 class="book__title">
           <span class="line"><span>RÉSERVEZ</span></span>
           <span class="line line--accent"><span>votre rendez-vous</span></span>
         </h2>
         <a href="https://salonkee.be/salon/54-cutz?lang=fr" target="_blank" rel="noopener"
            class="btn btn--gold btn--lg" data-cursor>Réserver via Salonkee</a>
-        <p class="book__policy reveal">
+        <p class="book__policy">
           Annulation : 50% des frais si &lt; 24h · 100% si &lt; 12h ou absence.
         </p>
       </div>
@@ -772,7 +772,7 @@
 
   <!-- GSAP (hébergé sur le site) -->
   <!-- Visionneuse plein écran de la galerie (remplie par script.js) -->
-  <div class="lb" id="lightbox" role="dialog" aria-modal="true" aria-label="Photos du salon" hidden>
+  <div class="lb" id="lightbox" data-lenis-prevent role="dialog" aria-modal="true" aria-label="Photos du salon" hidden>
     <div class="lb__bg"></div>
     <div class="lb__stage"></div>
     <p class="lb__count" aria-hidden="true"><span class="lb__current">1</span> / <span class="lb__total">10</span></p>
@@ -790,6 +790,7 @@
 
   <script src="assets/js/gsap.min.js"></script>
   <script src="assets/js/ScrollTrigger.min.js"></script>
+  <script src="assets/js/lenis.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

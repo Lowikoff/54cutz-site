@@ -205,23 +205,53 @@
   /* ---------- reveal on scroll (IntersectionObserver) ---------- */
   // opacity + translateY uniquement ; will-change posé juste avant
   // l'animation et retiré à la fin (pas de calques GPU gardés en mémoire).
-  const revealEls = document.querySelectorAll(".reveal:not(.hero .reveal), [data-reveal]");
-  const playReveal = (el) => {
+  // Mobile / tactile (même requête que le CSS) : déclenchement plus tôt
+  // (threshold 0, marge + en bas), cascade de 70 ms entre frères (5 max),
+  // classe .rv posée ici = le CSS ne cache rien si ce code ne tourne pas.
+  // Hero, photos de l'équipe et galerie gardent l'ancienne révélation.
+  const mobile = window.matchMedia("(max-width: 760px), (hover: none)").matches;
+  const revealEls = [...document.querySelectorAll(".reveal:not(.hero .reveal), [data-reveal]")];
+  const playReveal = (el, delay = 0) => {
     el.style.willChange = "opacity, transform";
-    const done = () => { el.style.willChange = ""; };
+    if (delay) el.style.setProperty("--rv-d", delay + "ms");
+    const done = () => {
+      el.style.willChange = "";
+      el.style.removeProperty("--rv-d");
+      if (el.classList.contains("rv-curtain")) el.style.clipPath = "none";
+    };
     el.addEventListener("transitionend", (e) => {
       if (e.target === el && e.propertyName === "transform") done();
     });
-    setTimeout(done, 1200); // filet si transitionend ne vient pas
+    setTimeout(done, delay + 1500); // filet si transitionend ne vient pas
     requestAnimationFrame(() => el.classList.add("is-in"));
   };
   if ("IntersectionObserver" in window && !reduce) {
-    const io = new IntersectionObserver((entries) => {
+    const ioOld = new IntersectionObserver((entries) => {
       entries.forEach((en) => {
-        if (en.isIntersecting) { playReveal(en.target); io.unobserve(en.target); }
+        if (en.isIntersecting) { playReveal(en.target); ioOld.unobserve(en.target); }
       });
     }, { threshold: 0.15, rootMargin: "0px 0px -8% 0px" });
-    revealEls.forEach((el) => io.observe(el));
+    const ioMob = mobile && new IntersectionObserver((entries) => {
+      const seen = new Map(); // rang dans la fournée, par parent
+      entries
+        .filter((en) => en.isIntersecting)
+        .sort((a, b) => (a.target.compareDocumentPosition(b.target) & 4 ? -1 : 1))
+        .forEach((en) => {
+          const rank = seen.get(en.target.parentElement) || 0;
+          seen.set(en.target.parentElement, rank + 1);
+          playReveal(en.target, Math.min(rank, 4) * 70);
+          ioMob.unobserve(en.target);
+        });
+    }, { threshold: 0, rootMargin: "0px 0px 8% 0px" });
+    revealEls.forEach((el) => {
+      if (ioMob && !el.matches(".member, .gallery__item")) {
+        el.classList.add("rv");
+        if (el.matches(".section-head__title, .about__title")) el.classList.add("rv-curtain");
+        ioMob.observe(el);
+      } else {
+        ioOld.observe(el);
+      }
+    });
   } else {
     revealEls.forEach((el) => el.classList.add("is-in"));
   }
@@ -231,8 +261,16 @@
   if (wordEl) {
     const text = wordEl.textContent.trim();
     wordEl.innerHTML = text.split(/\s+/)
-      .map((w) => `<span class="word">${w}</span>`).join(" ");
-    if (hasGSAP && !reduce) {
+      .map((w, i) => `<span class="word" style="--i:${i}">${w}</span>`).join(" ");
+    if (mobile && !reduce && "IntersectionObserver" in window) {
+      // mobile : un scrub JS suit mal l'élan du défilement de Safari iOS
+      // (même défaut que l'ancien parallaxe JS) → fondu mot par mot
+      // déclenché une fois, en CSS (opacity seule, sans GSAP)
+      const ioWords = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) { wordEl.classList.add("is-in"); ioWords.disconnect(); }
+      }, { threshold: 0, rootMargin: "0px 0px -12% 0px" });
+      ioWords.observe(wordEl);
+    } else if (hasGSAP && !reduce) {
       gsap.registerPlugin(ScrollTrigger);
       // pas de recalcul quand la barre d'adresse de Safari se replie
       ScrollTrigger.config({ ignoreMobileResize: true });
